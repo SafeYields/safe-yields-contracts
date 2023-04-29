@@ -8,12 +8,11 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "hardhat-deploy/solc_0.8/proxy/Proxied.sol";
 import "./Wallets.sol";
-import "./Owned.sol";
 
 /// @title  SafeToken
 /// @author crypt0grapher
 /// @notice This contract is used as a token for the SafeYields protocol
-contract SafeToken is ISafeToken, Owned, Wallets, Proxied, Pausable, ReentrancyGuard {
+contract SafeToken is ISafeToken, Wallets, Proxied, Pausable, ReentrancyGuard {
     // @notice ERC20 token data
     string public constant name = "Safe Yields Token";
     string public constant symbol = "SAFE";
@@ -39,17 +38,10 @@ contract SafeToken is ISafeToken, Owned, Wallets, Proxied, Pausable, ReentrancyG
 
     // @notice core protocol addresses
     IERC20 public usd;
-    ISafeVault public safeVault;
+        ISafeVault public safeVault;
 
     // @notice tax distribution percentages, multiplied by 10000, (25 stands for 0.25%)
     uint256[WALLETS] public taxDistributionOnMintAndBurn;
-
-    /* ============ Modifiers ============ */
-
-    modifier auth() {
-        require(_msgSender() == _getOwner(), "SafeToken:not-authorized");
-        _;
-    }
 
     /* ============ Changing State Functions ============ */
 
@@ -83,7 +75,7 @@ contract SafeToken is ISafeToken, Owned, Wallets, Proxied, Pausable, ReentrancyG
         uint256 amt
     ) public nonReentrant returns (bool) {
         address sender = _msgSender();
-        address admin = _getOwner();
+        address admin = _proxyAdmin();
         require(!paused(), "SafeToken:paused");
         require(whitelist[src] == true || whitelist[dst] == true || admin == sender, "SafeToken: transfer-prohibited");
         require(balanceOf[src] >= amt, "SafeToken:insufficient-balance");
@@ -99,11 +91,11 @@ contract SafeToken is ISafeToken, Owned, Wallets, Proxied, Pausable, ReentrancyG
     }
 
 
-    function mint(address _user, uint256 _amount) external auth {
+    function mint(address _user, uint256 _amount) external onlyProxyAdmin {
         _mint(_user, _amount);
     }
 
-    function burn(address _user, uint256 _amount) external auth {
+    function burn(address _user, uint256 _amount) external onlyProxyAdmin {
         _burn(_user, _amount);
     }
 
@@ -139,7 +131,7 @@ contract SafeToken is ISafeToken, Owned, Wallets, Proxied, Pausable, ReentrancyG
     }
 
 
-    function sellExactAmountOfSafe(uint256 _safeTokensToSell) public nonReentrant {
+    function sellExactAmountOfSafe(uint256 _safeTokensToSell) public nonReentrant returns (uint256) {
         require(_safeTokensToSell > 0, "SafeToken: amount must be greater than 0");
         uint256 usdPriceOfTokensToSell = _safeTokensToSell * price() / 1e6;
         uint256 usdTax = usdPriceOfTokensToSell * SELL_TAX_PERCENT / HUNDRED_PERCENT;
@@ -151,6 +143,7 @@ contract SafeToken is ISafeToken, Owned, Wallets, Proxied, Pausable, ReentrancyG
         if (usdTax - paid > 0) {
             safeVault.deposit(usdTax - paid);
         }
+        return usdToReturn;
     }
 
     function sellSafeForExactAmountOfUSD(uint256 _usdToPayToUser) public nonReentrant {
@@ -172,19 +165,19 @@ contract SafeToken is ISafeToken, Owned, Wallets, Proxied, Pausable, ReentrancyG
         return true;
     }
 
-    function whitelistAdd(address guy) external auth {
+    function whitelistAdd(address guy) external onlyProxyAdmin {
         whitelist[guy] = true;
     }
 
-    function whiteListRemove(address guy) external auth {
+    function whiteListRemove(address guy) external onlyProxyAdmin {
         whitelist[guy] = false;
     }
 
-    function pause() external auth {
+    function pause() external onlyProxyAdmin {
         _pause();
     }
 
-    function unpause() external auth {
+    function unpause() external onlyProxyAdmin {
         _unpause();
     }
 
@@ -211,7 +204,7 @@ contract SafeToken is ISafeToken, Owned, Wallets, Proxied, Pausable, ReentrancyG
     function _burn(address usr, uint256 amount) internal {
         require(balanceOf[usr] >= amount, "SafeToken:insufficient-balance");
         address sender = _msgSender();
-        if (_getOwner() != sender && usr != sender && allowance[usr][sender] != type(uint256).max) {
+        if (_proxyAdmin() != sender && usr != sender && allowance[usr][sender] != type(uint256).max) {
             require(allowance[usr][sender] >= amount, "SafeToken:insufficient-allowance");
             allowance[usr][sender] -= amount;
         }
