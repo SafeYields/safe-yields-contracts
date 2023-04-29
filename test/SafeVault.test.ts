@@ -49,9 +49,8 @@ describe('SafeVault', () => {
       await expect(safeVaultContractOtherUser.deposit(testAmount))
         .to.emit(safeVaultContractOtherUser, 'Deposit')
         .withArgs(otherUser, testAmount);
-      expect(await safeVaultContract.deposited(otherUser)).to.equal(testAmount);
       //that's include 1 usd deposited by init script
-      expect(await safeVaultContract.totalDeposited()).to.equal(toBigNumber(1).add(testAmount));
+      expect(await safeVaultContract.deposited()).to.equal(toBigNumber(1).add(testAmount));
     });
   });
 

@@ -18,7 +18,7 @@ export default task('init', 'funds th vault with 1 usdc and mints 1 safe to set 
     info('Minting 1 SAFE to the vault...');
     const safeVaultSAFEBalance = await safeTokenContract.balanceOf(safeVaultContract.address);
     if (safeVaultSAFEBalance.eq(ethers.constants.Zero)) {
-      (await safeTokenContract.mint(safeVaultContract.address, toBigNumber(1))).wait;
+      (await safeTokenContract.mint(safeVaultContract.address, toBigNumber(1, 6))).wait;
       success('Done.');
     } else error('SAFE already minted to the vault. Skipping minting.');
 

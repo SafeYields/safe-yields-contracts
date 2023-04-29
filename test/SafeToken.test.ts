@@ -59,9 +59,7 @@ describe('SafeToken', () => {
     });
 
     it('non-owner should not be able to mint safe token', async () => {
-      await expect(safeTokenContractOtherUser.mint(otherUser, testAmountBN)).to.be.revertedWith(
-        'SafeToken:not-authorized',
-      );
+      await expect(safeTokenContractOtherUser.mint(otherUser, testAmountBN)).to.be.revertedWith('NOT_AUTHORIZED');
     });
   });
 
@@ -192,7 +190,7 @@ describe('SafeToken', () => {
     });
 
     it('non-owner should not be able to pause', async () => {
-      await expect(safeTokenContractOtherUser.pause()).to.be.revertedWith('SafeToken:not-authorized');
+      await expect(safeTokenContractOtherUser.pause()).to.be.revertedWith('NOT_AUTHORIZED');
     });
   });
 
