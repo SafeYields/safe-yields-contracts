@@ -115,6 +115,11 @@ const config: HardhatUserConfig = {
       421613: TESTNET_USDC_ADDRESS,
       1337: MAINNET_USDC_ADDRESS,
     },
+    // kyberSwapRouter: {
+    //   1337: '0x6131B5fae19EA4f9D964eAc0408E4408b66337b5',
+    //   42161: '0x6131B5fae19EA4f9D964eAc0408E4408b66337b5',
+    //   421613: '',
+    // },
   },
   solidity: {
     compilers: [

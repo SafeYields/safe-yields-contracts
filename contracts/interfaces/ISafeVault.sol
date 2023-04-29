@@ -24,6 +24,6 @@ interface ISafeVault {
 
     // @notice total deposited of the vault from non-Safe Token "external" users
     // @return total stable coin deposited to the vault
-    function totalDeposited() external view returns (uint256);
+    function deposited() external view returns (uint256);
 
 }

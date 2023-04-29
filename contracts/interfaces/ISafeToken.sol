@@ -26,7 +26,7 @@ interface ISafeToken is IERC20, IERC20Metadata {
     *   @notice sell given amount of SAFE tokens for USD, taxes deducted from the user, SAFE is burned
     *   @param _safeTokensToSell number of tokens to sell, the respective amount of stable coin  will be returned from the user, Safe Yield token will be burned
     */
-    function sellExactAmountOfSafe(uint256 _safeTokensToSell) external;
+    function sellExactAmountOfSafe(uint256 _safeTokensToSell) external returns (uint256);
 
     /**
     *   @notice calculate the amount of SAFE needed to swap to get the exact USD amount, SAFE is burned USD redeemed from the vault
