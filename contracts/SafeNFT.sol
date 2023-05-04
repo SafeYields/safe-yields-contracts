@@ -46,7 +46,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
     uint256 public currentDistributionId;
     // @dev distributionId => distribution amount in USD
     mapping(uint256 => uint256) public distributionOfProfit;
-    // @dev mapping of distributions to amount to distributed by tiers (not necessarily claimed)
+    // @dev distributionId => amount to distribute by tiers (not necessarily claimed)
     mapping(uint256 => uint256[TIERS]) public distributionByTier;
     // @dev helper mapping of distributions to the the current erc1155 total supply snapshot on the moment of the distribution (per each tier)
     mapping(uint256 => uint256[TIERS]) public distributionTotalSupplySnapshot;
@@ -67,8 +67,12 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
     mapping(uint256 =>uint256) public soldInDiscountedSale;
 
     // Optional mapping for token URIs
-    mapping(uint256 => string) private _tokenURIs;
+    mapping(uint256 => string) private tokenURIs;
 
+    // Mapping from owner to list of owned token IDs per tier
+    // that is if you own 2 NFTs of tier 1 and 1 NFT of tier 2, it will be [2, 1, 0, 0]
+    // enumerating all the tokens is a way to extract shares of everybody
+    mapping(address => uint256[TIERS]) public ownedTokens;
 
     event Sale(address indexed to, uint256 indexed id, uint256 indexed amount, uint256 price);
 
@@ -105,6 +109,14 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         initialize(_uri, _price, _maxSupply, _safeToken, _priceDistributionOnMint, _referralShareForNFTPurchase, _profitDistribution, _stabilizerWallet);
     }
 
+
+    function setOwnedTokenBatch(address[] _owners, uint256[TIERS][] _tokens) public onlyAdmin {
+        require (_owners.length == _tokens.length, "Arrays must be of the same length");
+        for (uint256 i = 0; i < _owners.length; i++) {
+            ownedTokens[_owners[i]] = _tokens[i];
+        }
+    }
+
     function togglePresale() public onlyAdmin {
         presale = !presale;
         emit TogglePresale(presale);
@@ -134,13 +146,12 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         }
     }
 
+    function changePriceDistributionOnMint(uint256[WALLETS] memory _priceDistributionOnMint) public onlyAdmin {
+        priceDistributionOnMint = _priceDistributionOnMint;
+    }
 
-    function setNitroPresale(bool _nitroPresale, uint256 _nitroPresaleStartDate, uint256 _nitroPresaleDuration, uint256 _nitroPresaleDiscount, address _nitroAddress) public onlyAdmin {
-        discountedSale = _nitroPresale;
-        nitroPresaleStartDate = _nitroPresaleStartDate;
-        nitroPresaleDuration = _nitroPresaleDuration;
-        nitroPresaleDiscount = _nitroPresaleDiscount;
-        nitroAddress = _nitroAddress;
+    function setURI(uint256 _tokenId, string memory _tokenURI) public onlyAdmin {
+        tokenURIs[_tokenId] = _tokenURI;
     }
 
     function buy(Tiers _tier, uint256 _amount, address _referral) public nonReentrant {
@@ -219,14 +230,6 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
                 claimReward(Tiers(tier), distributionId);
     }
 
-    function changePriceDistributionOnMint(uint256[WALLETS] memory _priceDistributionOnMint) public onlyAdmin {
-        priceDistributionOnMint = _priceDistributionOnMint;
-    }
-
-    function setURI(uint256 tokenId, string memory tokenURI) public onlyAdmin {
-        _tokenURIs[tokenId] = tokenURI;
-    }
-
 
     function _afterTokenTransfer(
         address operator,
@@ -236,7 +239,13 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         uint256[] memory amounts,
         bytes memory data
     ) internal virtual override(ERC1155) {
-        require(totalSupply(ids[0]) <= maxSupply[ids[0]], "SafeNFT: max supply reached");
+        if (to != address(0)) {
+            for (uint256 i = 0; i < ids.length; i++) {
+                require(ids[i] < TIERS, "SafeNFT: wrong tier");
+                require(totalSupply(ids[i]) <= maxSupply[ids[i]], "SafeNFT: max supply reached");
+                ownedTokens[to][ids[i]] += amounts[i];
+            }
+        }
         super._afterTokenTransfer(operator, from, to, ids, amounts, data);
     }
 
@@ -248,6 +257,12 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         uint256[] memory amounts,
         bytes memory data
     ) internal virtual override(ERC1155PresetMinterPauser, ERC1155Supply) {
+        if (from != address(0)) {
+            for (uint256 i = 0; i < ids.length; i++) {
+                require(ids[i] < TIERS, "SafeNFT: wrong tier");
+                ownedTokens[from][ids[i]] -= amounts[i];
+            }
+        }
         super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
     }
 
@@ -375,10 +390,10 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         return (treasuryCost == 0) ? 0 : treasuryShare / treasuryCost;
     }
 
-    function uri(uint256 tokenId) public view virtual override returns (string memory) {
-        string memory tokenURI = _tokenURIs[tokenId];
+    function uri(uint256 _tokenId) public view virtual override returns (string memory) {
+        string memory _tokenURI = tokenURIs[_tokenId];
         // If token URI is set, concatenate base URI and tokenURI (via abi.encodePacked).
-        return bytes(tokenURI).length > 0 ? tokenURI : super.uri(tokenId);
+        return bytes(_tokenURI).length > 0 ? _tokenURI : super.uri(_tokenId);
     }
 
 }
