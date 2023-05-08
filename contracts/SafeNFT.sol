@@ -50,7 +50,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
     // @dev distributionId => total distribution amount in USD (total amount of USD sent for distribution)
     mapping(uint256 => uint256) public profitToDistribute;
     // @dev distributionId => SAFE to distribute to the holders (this is half of totalAmount in USD swapped for SAFE)
-    mapping(uint256 => uint256) public safeToDistribute;
+        mapping(uint256 => uint256) public safeToDistribute;
     // @dev distributionId => account => alreadyDistributedAmount (claimed)
     mapping(uint256 => mapping(address => uint256)) public alreadyDistributed;
     // @dev distributionId => tier => amount
@@ -190,8 +190,9 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         address user = _msgSender();
         for (uint256 distribution = currentDistributionId; distribution > 0; distribution--) {
             uint256 reward = getPendingRewards(user, distribution);
+            require(reward > 0, "No rewards to claim");
             if (reward > 0) {
-                usd.transfer(user, reward);
+                safeToken.transfer(user, reward);
                 alreadyDistributed[distribution][user] += reward;
                 alreadyDistributedTotal[distribution] += reward;
             }
