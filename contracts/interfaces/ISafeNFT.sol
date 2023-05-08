@@ -33,13 +33,7 @@ interface ISafeNFT is IERC1155 {
     /**
     *   @notice the function calculates the amount of the reward for the NFT holder and transfers it to the NFT holder
     */
-    function claimReward(Tiers _tier, uint256 _distributionId) external;
-
-    /**
-*   @notice the function calculates the amount of the reward for the NFT holder and transfers it to the NFT holder
-    */
-    function claimRewardsTotal() external;
-
+    function claimReward() external;
 
     /**
     *   @notice gets NFT balance for all tiers
@@ -52,15 +46,10 @@ interface ISafeNFT is IERC1155 {
     function togglePresale() external;
 
     /**
-    *   @notice toggles presale status
+    *   @notice sets all discounted NFT prices
+    *   @param _presalePrice percent to multiply to get the discounted price, e.g. 90 for 10% discount, percent format is determined by the multiplier
     */
-    function setPresaleStartDate(uint256 launchDate, uint256 _weekDuration) external;
-
-    /**
-    *   @notice sets all discounted NFT prices in USD, for presale for all 4 weeks of the presale
-    *   @param _presalePrice 4x4 table of the discounted prices for all 4 tiers for all 4 weeks of the presale
-    */
-    function setDiscountedPriceTable(uint256[][] memory _presalePrice) external;
+    function setDiscountedPrice(uint256 _presalePrice) external;
 
 
     /**
@@ -84,17 +73,11 @@ interface ISafeNFT is IERC1155 {
 
     /**
     *   @notice gets all discounted NFT prices in USD, for presale for all 4 weeks of the presale
-     *   @return uint256[] containing all NFT prices in one table in USD for the current presale week
+     *   @return uint256 containing percent to multiply to the price to get a discount
     */
-    function getDiscountedPriceTable()  external view returns (uint256[] memory);
+    function discountedPrice()  external view returns (uint256);
 
 
-
-    /**
-    *   @notice gets the current presale week
-    *   @return returns 1-4
-    */
-    function getCurrentPresaleWeek() external view returns (uint256);
 
     /**
     *   @notice gets NFT price in USD
@@ -125,12 +108,7 @@ interface ISafeNFT is IERC1155 {
     /**
     *   @notice returns the amount of the reward share for the NFT holder
     */
-    function getMyPendingRewardsTotal() external view returns (uint256);
-
-    /**
-    *   @notice returns the amount of the reward share for the NFT holder
-    */
-    function getPendingRewards(address _user, Tiers _tier, uint256 _distributionId) external view returns (uint256);
+    function getPendingRewards(address _user, uint256 _distributionId) external view returns (uint256);
 
     /**
     *   @notice gets the total usd value of the NFT minted
