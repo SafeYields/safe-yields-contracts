@@ -52,8 +52,8 @@ export const costDistributionForNFT: Distribution = {
 export const referralShareForNFTPurchase = percent(5);
 //the rest goes to teh vault
 export const profitDistributionForNFT: Distribution = {
-  treasury: percent(25),
-  management: percent(20),
+  treasury: percent(10),
+  management: percent(30),
 };
 
 export enum NFTTiers {
