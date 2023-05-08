@@ -22,8 +22,8 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
     uint256[TIERS][WEEKS] public presalePrice;
     uint256[TIERS] public maxSupply;
 
-    uint256 public presaleStartDate;
-    uint256 public weekDuration;
+    mapping(uint256 => string) private tokenURIs;
+    address[] public tokenHolders;
 
     ISafeToken public safeToken;
     ISafeVault public safeVault;
@@ -34,7 +34,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
     uint256[WALLETS] public priceDistributionOnMint;
     uint256[WALLETS] public profitDistribution;
     uint256 public referralShareForNFTPurchase;
-    address public stabilizerWallet;
+    address public preVaultWallet;
 
     // @dev Presale status, if true, only whitelisted addresses can mint
     bool public presale;
@@ -43,36 +43,29 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
     uint256[TIERS] public presaleMaxSupply;
     uint256[TIERS] public currentlySoldInPresale;
 
+    mapping(address => bool) public isTokenHolder;
+
+    // distribution ID, each distribution ID got an amount in USD and SAFE to distribute, snapshot of owned tokens, and snapshot of the total supply.
     uint256 public currentDistributionId;
-    // @dev distributionId => distribution amount in USD
-    mapping(uint256 => uint256) public distributionOfProfit;
-    // @dev distributionId => amount to distribute by tiers (not necessarily claimed)
-    mapping(uint256 => uint256[TIERS]) public distributionByTier;
-    // @dev helper mapping of distributions to the the current erc1155 total supply snapshot on the moment of the distribution (per each tier)
-    mapping(uint256 => uint256[TIERS]) public distributionTotalSupplySnapshot;
-    // @dev distributionId => tier => account => alreadyDistributedAmount
-    mapping(uint256 => mapping(uint256 => mapping(address => uint256))) public alreadyDistributedAmount;
+    // @dev distributionId => total distribution amount in USD (total amount of USD sent for distribution)
+    mapping(uint256 => uint256) public profitToDistribute;
+    // @dev distributionId => SAFE to distribute to the holders (this is half of totalAmount in USD swapped for SAFE)
+    mapping(uint256 => uint256) public safeToDistribute;
+    // @dev distributionId => account => alreadyDistributedAmount (claimed)
+    mapping(uint256 => mapping(address => uint256)) public alreadyDistributed;
     // @dev distributionId => tier => amount
-    mapping(uint256 => uint256[TIERS]) public alreadyDistributedAmountByTier;
-
     address public ambassador;
-
-    // @dev Nitropad 10% presale support
-    bool public discountedSale;
-    uint256 public nitroPresaleStartDate;
-    uint256 public nitroPresaleDuration;
-    uint256 public nitroPresaleDiscount;
-    address public nitroAddress;
+    // snapshot of the owned tokens on the moment of distribution
+    // distributionId => address => tokens
+    mapping(uint256 => mapping(address => uint256[TIERS])) public snapshotOfOwnedTokens;
+    // distributionId => totalSupply
+    mapping(uint256 => uint256[TIERS]) public snapshotOfTotalSupply;
+    uint256 public discountedPrice;
     // @dev tier => amount
-    mapping(uint256 =>uint256) public soldInDiscountedSale;
+    mapping(uint256 => uint256) public soldInDiscountedSale;
+    // @dev distributionId => already paid out amount in SafeToken
+    mapping(uint256 => uint256) public alreadyDistributedTotal;
 
-    // Optional mapping for token URIs
-    mapping(uint256 => string) private tokenURIs;
-
-    // Mapping from owner to list of owned token IDs per tier
-    // that is if you own 2 NFTs of tier 1 and 1 NFT of tier 2, it will be [2, 1, 0, 0]
-    // enumerating all the tokens is a way to extract shares of everybody
-    mapping(address => uint256[TIERS]) public ownedTokens;
 
     event Sale(address indexed to, uint256 indexed id, uint256 indexed amount, uint256 price);
 
@@ -84,7 +77,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
 
     /* ============ External and Public State Changing Functions ============ */
 
-    function initialize(string memory _uri, uint256[TIERS] memory _price, uint256[TIERS] memory _maxSupply, ISafeToken _safeToken, uint256[WALLETS] memory _priceDistributionOnMint, uint256 _referralShareForNFTPurchase, uint256[WALLETS] memory _profitDistribution, address _stabilizerWallet) public proxied {
+    function initialize(string memory _uri, uint256[TIERS] memory _price, uint256[TIERS] memory _maxSupply, ISafeToken _safeToken, uint256[WALLETS] memory _priceDistributionOnMint, uint256 _referralShareForNFTPurchase, uint256[WALLETS] memory _profitDistribution, address _prevaultWallet) public proxied {
         _setURI(_uri);
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
         _setupRole(MINTER_ROLE, _msgSender());
@@ -95,7 +88,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         priceDistributionOnMint = _priceDistributionOnMint;
         referralShareForNFTPurchase = _referralShareForNFTPurchase;
         profitDistribution = _profitDistribution;
-        stabilizerWallet = _stabilizerWallet;
+        preVaultWallet = _prevaultWallet;
         _setWallets(safeToken.getWallets());
         safeVault = safeToken.safeVault();
         usd = safeToken.usd();
@@ -105,54 +98,18 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         currentDistributionId = 0;
     }
 
-    constructor(string memory _uri, uint256[TIERS] memory _price, uint256[TIERS] memory _maxSupply, ISafeToken _safeToken, uint256[WALLETS] memory _priceDistributionOnMint, uint256 _referralShareForNFTPurchase, uint256[WALLETS] memory _profitDistribution, address _stabilizerWallet) ERC1155PresetMinterPauser(_uri) {
-        initialize(_uri, _price, _maxSupply, _safeToken, _priceDistributionOnMint, _referralShareForNFTPurchase, _profitDistribution, _stabilizerWallet);
+    constructor(string memory _uri, uint256[TIERS] memory _price, uint256[TIERS] memory _maxSupply, ISafeToken _safeToken, uint256[WALLETS] memory _priceDistributionOnMint, uint256 _referralShareForNFTPurchase, uint256[WALLETS] memory _profitDistribution, address _prevaultWallet) ERC1155PresetMinterPauser(_uri) {
+        initialize(_uri, _price, _maxSupply, _safeToken, _priceDistributionOnMint, _referralShareForNFTPurchase, _profitDistribution, _prevaultWallet);
     }
 
+    //    ///TODO remove once filled with data
+    //    function setOwnedTokenBatch(address[] calldata _owners, uint256[TIERS][] calldata _tokens) public onlyAdmin {
+    //        require(_owners.length == _tokens.length, "Arrays must be of the same length");
+    //        for (uint256 i = 0; i < _owners.length; i++) {
+    //            ownedTokens[_owners[i]] = _tokens[i];
+    //        }
+    //    }
 
-    function setOwnedTokenBatch(address[] _owners, uint256[TIERS][] _tokens) public onlyAdmin {
-        require (_owners.length == _tokens.length, "Arrays must be of the same length");
-        for (uint256 i = 0; i < _owners.length; i++) {
-            ownedTokens[_owners[i]] = _tokens[i];
-        }
-    }
-
-    function togglePresale() public onlyAdmin {
-        presale = !presale;
-        emit TogglePresale(presale);
-    }
-
-    function setPresaleStartDate(uint256 _launchDate, uint256 _weekDuration) public onlyAdmin {
-        //        require(_launchDate > block.timestamp, "Launch date must be in the future");
-        presaleStartDate = _launchDate;
-        weekDuration = _weekDuration;
-    }
-
-    function setPresaleMaxSupply(uint256[TIERS] memory _presaleMaxSupply) public onlyAdmin {
-        presaleMaxSupply = _presaleMaxSupply;
-    }
-
-    function setAmbassador(address _ambassador) public onlyAdmin {
-        ambassador = _ambassador;
-    }
-
-    function setDiscountedPriceTable(uint256[][] memory _presalePrice) public onlyAdmin {
-        require(_presalePrice.length == WEEKS, "Incorrect number of weeks");
-        for (uint256 i = 0; i < WEEKS; i++) {
-            require(_presalePrice[i].length == TIERS, "Incorrect number of tiers");
-            for (uint256 j = 0; j < TIERS; j++) {
-                presalePrice[i][j] = _presalePrice[i][j];
-            }
-        }
-    }
-
-    function changePriceDistributionOnMint(uint256[WALLETS] memory _priceDistributionOnMint) public onlyAdmin {
-        priceDistributionOnMint = _priceDistributionOnMint;
-    }
-
-    function setURI(uint256 _tokenId, string memory _tokenURI) public onlyAdmin {
-        tokenURIs[_tokenId] = _tokenURI;
-    }
 
     function buy(Tiers _tier, uint256 _amount, address _referral) public nonReentrant {
         require(_amount > 0, "E RC1155PresetMinterPauser: amount must be greater than 0");
@@ -163,19 +120,19 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         uint256 id = uint256(_tier);
 
         //during presale the shares are distributed in USD, then in SAFE
-        if (discountedSale) {
+        if (presale) {
             address sender = _msgSender();
-            uint256 supplyLeft =  presaleMaxSupply[uint256(_tier)] * 4 - currentlySoldInPresale[uint256(_tier)];
-            require(_amount <= supplyLeft, "Not enough tokens left for sale");
+            uint256 supplyLeft = presaleMaxSupply[uint256(_tier)] * 4 - currentlySoldInPresale[uint256(_tier)];
+            require(_amount <= supplyLeft, "Maximum supply has been reached for the tier");
             soldInDiscountedSale[uint256(_tier)] += _amount;
-            uint256 usdPrice = price[uint256(_tier)] * nitroPresaleDiscount * _amount / HUNDRED_PERCENT;
+            uint256 usdPrice = price[uint256(_tier)] * discountedPrice * _amount / HUNDRED_PERCENT;
             usd.transferFrom(_msgSender(), address(this), usdPrice);
             uint256 toSendToReferral = referralExists ? _transferPercent(usd, usdPrice, _referral, referralShareForNFTPurchase) : 0;
             uint256 toSendToAmbassador = !referralExists ? _transferPercent(usd, usdPrice, ambassador, referralShareForNFTPurchase) : 0;
             uint256 amountDistributed = _distribute(usd, usdPrice, priceDistributionOnMint);
             uint256 balance = usd.balanceOf(address(this));
             if (balance > 0) {
-                usd.transfer(stabilizerWallet, balance);
+                usd.transfer(preVaultWallet, balance);
             }
             emit Sale(sender, _amount, uint256(_tier), usdPrice);
         }
@@ -197,39 +154,44 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         _mint(_msgSender(), id, _amount, "");
     }
 
+
     function distributeProfit(uint256 _amountUSD) public nonReentrant {
         usd.transferFrom(_msgSender(), address(this), _amountUSD);
-        uint256 rewards = _amountUSD / 2;
-        uint256 toSellForSafe = _getTotalShare(_amountUSD - rewards, profitDistribution, 0);
-        uint256 safeAmount = safeToken.buySafeForExactAmountOfUSD(toSellForSafe);
-        uint256 amountDistributed = _distribute(safeToken, safeAmount, profitDistribution);
         currentDistributionId++;
-        distributionOfProfit[currentDistributionId] = amountDistributed;
-        uint256 totalSupplyAllTiers = getTotalSupplyAllTiers();
-        for (uint256 i = 0; i < TIERS; i++) {
-            uint256 supply = totalSupply(i);
-            distributionTotalSupplySnapshot[currentDistributionId][i] = supply;
-            distributionByTier[currentDistributionId][i] = rewards * supply / totalSupplyAllTiers;
+        profitToDistribute[currentDistributionId] = _amountUSD;
+        uint256 rewardsToHolders = _amountUSD / 2;
+        //send half to treasury and management
+        uint256 distributedInternally = _distribute(usd, _amountUSD - rewardsToHolders, profitDistribution);
+        // get snapshotOfOwnedTokens, loop through addresses, get tokens, and record distribution
+
+        for (uint256 i = 0; i < tokenHolders.length; i++) {
+            address tokenHolder = tokenHolders[i];
+            if (tokenHolder != address(0) && isTokenHolder[tokenHolder]) {
+                for (uint256 j = 0; j < TIERS; j++) {
+                    uint256 owned = balanceOf(tokenHolder, j);
+                    if (owned > 0) {
+                        snapshotOfOwnedTokens[currentDistributionId][tokenHolder][j] = owned;
+                    }
+                }
+            }
         }
-        uint256 balance = usd.balanceOf(address(this));
-        if (balance > 0) {
-            safeVault.deposit(balance);
-        }
+        // Now Selling Safe for USD in one transaction and setting it up for distribution
+        safeToDistribute[currentDistributionId] = safeToken.buySafeForExactAmountOfUSD(rewardsToHolders);
+        // Getting a snapshotOfTotalSupply
+        snapshotOfTotalSupply[currentDistributionId] = getTotalSupplyAllTiers();
     }
 
-    function claimReward(Tiers _tier, uint256 _distributionId) public nonReentrant {
+    function claimReward() public nonReentrant {
         address user = _msgSender();
-        uint256 reward = getPendingRewards(user, _tier, _distributionId);
-        usd.transfer(user, reward);
-        alreadyDistributedAmount[_distributionId][uint256(_tier)][user] += reward;
+        for (uint256 distribution = currentDistributionId; distribution >= 0; distribution--) {
+            uint256 reward = getPendingRewards(user, distribution);
+            if (reward > 0) {
+                usd.transfer(user, reward);
+                alreadyDistributed[distribution][user] += reward;
+                alreadyDistributedTotal[distribution] += reward;
+            }
+        }
     }
-
-    function claimRewardsTotal() public nonReentrant {
-        for (uint256 tier = 0; tier < TIERS; tier++)
-            for (uint256 distributionId = 0; distributionId <= currentDistributionId; distributionId++)
-                claimReward(Tiers(tier), distributionId);
-    }
-
 
     function _afterTokenTransfer(
         address operator,
@@ -239,13 +201,32 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         uint256[] memory amounts,
         bytes memory data
     ) internal virtual override(ERC1155) {
-        if (to != address(0)) {
+        // from part
+        if (from != address(0)) {
+            bool fromAddressIsNotATokenHolderAnymore = true;
+            //proving this wrong, if the address still holds some tokens of any tier
             for (uint256 i = 0; i < ids.length; i++) {
-                require(ids[i] < TIERS, "SafeNFT: wrong tier");
-                require(totalSupply(ids[i]) <= maxSupply[ids[i]], "SafeNFT: max supply reached");
-                ownedTokens[to][ids[i]] += amounts[i];
+                if (balanceOf(from, ids[i]) != 0) {
+                    fromAddressIsNotATokenHolderAnymore = false;
+                }
+            }
+            if (fromAddressIsNotATokenHolderAnymore) {
+                isTokenHolder[from] = false;
             }
         }
+
+        // to part
+        if (to != address(0)) {
+            // minting or transferring
+            for (uint256 i = 0; i < ids.length; i++) {
+                require(ids[i] < TIERS, "SafeNFT: wrong tier");
+                if (!isTokenHolder[to]) {
+                    tokenHolders.push(to);
+                    isTokenHolder[to] = true;
+                }
+            }
+        }
+
         super._afterTokenTransfer(operator, from, to, ids, amounts, data);
     }
 
@@ -257,10 +238,11 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         uint256[] memory amounts,
         bytes memory data
     ) internal virtual override(ERC1155PresetMinterPauser, ERC1155Supply) {
-        if (from != address(0)) {
+        if (from == address(0)) {
+            //minting
             for (uint256 i = 0; i < ids.length; i++) {
                 require(ids[i] < TIERS, "SafeNFT: wrong tier");
-                ownedTokens[from][ids[i]] -= amounts[i];
+                require(totalSupply(ids[i]) <= maxSupply[ids[i]], "SafeNFT: max supply reached");
             }
         }
         super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
@@ -270,22 +252,47 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         return super.supportsInterface(interfaceId);
     }
 
+
+    /* ============ Admin  Functions ============ */
+
+    function togglePresale() public onlyAdmin {
+        presale = !presale;
+        emit TogglePresale(presale);
+    }
+
+
+    function setPresaleMaxSupply(uint256[TIERS] memory _presaleMaxSupply) public onlyAdmin {
+        presaleMaxSupply = _presaleMaxSupply;
+    }
+
+    function setAmbassador(address _ambassador) public onlyAdmin {
+        ambassador = _ambassador;
+    }
+
+    function setDiscountedPrice(uint256 _discountedPrice) public onlyAdmin {
+        discountedPrice = _discountedPrice;
+    }
+
+    function changePriceDistributionOnMint(uint256[WALLETS] memory _priceDistributionOnMint) public onlyAdmin {
+        priceDistributionOnMint = _priceDistributionOnMint;
+    }
+
+    function setURI(uint256 _tokenId, string memory _tokenURI) public onlyAdmin {
+        tokenURIs[_tokenId] = _tokenURI;
+    }
+
     function burnAdmin(
         address account,
         uint256 id,
         uint256 value
-    ) public onlyAdmin{
+    ) public onlyAdmin {
         _burn(account, id, value);
     }
 
 
     /* ============ External and Public View Functions ============ */
 
-    function getCurrentPresaleWeek() public view returns (uint256) {
-        return presale && presaleStartDate > 0 && presaleStartDate < block.timestamp ? (block.timestamp - presaleStartDate) / weekDuration + 1 : 0;
-    }
-
-    function getPresaleNFTAvailable() public view returns (uint256[] memory) {
+    function getNFTSupplyAvailable() public view returns (uint256[] memory) {
         uint256[] memory supplyLeft = new uint256[](TIERS);
         for (uint256 i = 0; i < TIERS; i++) {
             supplyLeft[i] = presaleMaxSupply[i] * 4 - currentlySoldInPresale[i] - soldInDiscountedSale[i];
@@ -323,58 +330,46 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         return priceTable;
     }
 
-    function getDiscountedPriceTable() public view returns (uint256[] memory) {
-        uint256 week = getCurrentPresaleWeek();
-        if (week > WEEKS)
-            return getPriceTable();
-        uint256[] memory priceTable = new uint256[](TIERS);
-        for (uint256 i = 0; i < TIERS; i++) {
-            priceTable[i] = presalePrice[week - 1][i];
-        }
-        return priceTable;
-    }
-
     function getPrice(Tiers _tier) public view returns (uint256) {
         return price[uint256(_tier)];
     }
 
     function getFairPrice(Tiers _tier) public view returns (uint256) {
-        return price[uint256(_tier)] + distributionByTier[currentDistributionId][uint256(_tier)] / (totalSupply(uint256(_tier)) == 0 ? 1 : totalSupply(uint256(_tier)));
+        uint256 priceOfTier = price[uint256(_tier)];
+        uint256 totalSupply = (totalSupply(uint256(_tier)) == 0 ? 1 : totalSupply(uint256(_tier)));
+        uint256 profit = 0;
+        for (uint256 i = 0; i < currentDistributionId; i++) {
+            profit += profitToDistribute[i];
+        }
+        uint256 fairPrice = priceOfTier + profit * uint256(_tier) / totalSupply;
+        return priceOfTier;
     }
 
-    function getTotalSupplyAllTiers() public view returns (uint256) {
-        uint256 totalSupply_ = 0;
+    function getTotalSupplyAllTiers() public view returns (uint256[TIERS] memory) {
+        uint256[TIERS] memory totalSupply_;
         for (uint256 i = 0; i < TIERS; i++) {
-            totalSupply_ += totalSupply(i);
+            totalSupply_[i] = totalSupply(i);
         }
         return totalSupply_;
     }
 
-
-    function getMyPendingRewardsTotal() public view returns (uint256) {
-        address user = _msgSender();
-        uint256 rewards = 0;
-        for (uint256 tier = 0; tier < TIERS; tier++)
-            for (uint256 distributionId = 0; distributionId <= currentDistributionId; distributionId++)
-                rewards += getPendingRewards(user, Tiers(tier), distributionId);
-        return rewards;
+    function getMyPendingRewards() public view returns (uint256) {
+        return getPendingRewards(_msgSender(), currentDistributionId);
     }
 
-    function getPendingRewards(address _user, Tiers _tier, uint256 _distributionId) public view returns (uint256) {
-        uint256 tier = uint256(_tier);
-        uint256 rewardsForTier = distributionByTier[currentDistributionId][tier];
+    function getPendingRewards(address _user, uint256 _distributionId) public view returns (uint256) {
         // user's rewards is the % of the total rewards for the tier
-        uint256 rewardsForBalance = totalSupply(tier) == 0 ? 0 : rewardsForTier * balanceOf(_user, tier) / totalSupply(tier);
-        return rewardsForBalance - alreadyDistributedAmount[_distributionId][tier][_user];
-    }
+        uint256 weightedBalance = 0;
+        for (uint256 tier = 0; tier < TIERS; tier++) {
+            weightedBalance += balanceOf(_user, tier) * (tier + 1);
+        }
+        uint256 weightedSupply = 0;
+        for (uint256 tier = 0; tier < TIERS; tier++) {
+            weightedSupply += snapshotOfTotalSupply[_distributionId][tier] * (tier + 1);
+        }
 
-    function getUnclaimedRewards() public view returns (uint256) {
-        uint undistributed = 0;
-        for (uint256 i = 0; i < TIERS; i++)
-            for (uint256 distributionId = 0; distributionId <= currentDistributionId; distributionId++)
-                undistributed += distributionByTier[distributionId][i] - alreadyDistributedAmountByTier[distributionId][i];
-        return undistributed;
-
+        uint256 rewards = weightedSupply == 0 ? 0 : safeToDistribute[_distributionId] * weightedBalance / weightedSupply;
+        return rewards - alreadyDistributed[_distributionId][_user];
     }
 
     function getTreasuryCost() public view returns (uint256) {
@@ -387,13 +382,21 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         for (uint256 tier = 0; tier < TIERS; tier++)
             treasuryShare += balanceOf(user, tier) * price[tier];
         uint256 treasuryCost = getTreasuryCost();
-        return (treasuryCost == 0) ? 0 : treasuryShare / treasuryCost;
+        return (treasuryCost == 0) ? 0 : treasuryShare * HUNDRED_PERCENT / treasuryCost;
     }
 
     function uri(uint256 _tokenId) public view virtual override returns (string memory) {
         string memory _tokenURI = tokenURIs[_tokenId];
         // If token URI is set, concatenate base URI and tokenURI (via abi.encodePacked).
         return bytes(_tokenURI).length > 0 ? _tokenURI : super.uri(_tokenId);
+    }
+
+    function getUnclaimedRewards() public view returns (uint256) {
+        uint256 unclaimedRewards = 0;
+        for (uint256 distribution = currentDistributionId; distribution >= 0; distribution--) {
+            unclaimedRewards += safeToDistribute[currentDistributionId] - alreadyDistributedTotal[currentDistributionId];
+        }
+        return unclaimedRewards;
     }
 
 }

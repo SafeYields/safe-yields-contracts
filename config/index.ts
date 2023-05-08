@@ -71,13 +71,6 @@ export const tierPriceNFT: TierPrices = {
   Tier4: toBigNumber(1050, 6),
 };
 
-export const discountedPresalePriceNFT: TierPrices[] = [0.6, 0.7, 0.8, 0.9].map(discount => {
-  return {
-    Tier1: toBigNumber(131.25 * discount, 6),
-    Tier2: toBigNumber(262.5 * discount, 6),
-    Tier3: toBigNumber(525 * discount, 6),
-    Tier4: toBigNumber(1050 * discount, 6),
-  };
-});
+export const discountedPrice = percent(95);
 export const tierMaxSupplyNFT = [2000, 1000, 1000, 1000];
 export const presaleMaxSupply: [number, number, number, number] = [50, 25, 25, 25];
