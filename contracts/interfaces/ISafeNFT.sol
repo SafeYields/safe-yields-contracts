@@ -111,10 +111,6 @@ interface ISafeNFT is IERC1155 {
     function getPendingRewards(address _user, uint256 _distributionId) external view returns (uint256);
 
     /**
-    *   @notice gets the total usd value of the NFT minted
-    */
-    function getTreasuryCost() external view returns (uint256);
-    /**
     *   @notice **Your NFTs (% Treasury) **is calculated in $ as a relation of total price of NFTs possessed by the $ amount of Investment Pool - including its SAFE and stable coin  components.
     */
     function getMyShareOfTreasury() external view returns (uint256);

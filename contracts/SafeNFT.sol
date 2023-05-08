@@ -50,7 +50,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
     // @dev distributionId => total distribution amount in USD (total amount of USD sent for distribution)
     mapping(uint256 => uint256) public profitToDistribute;
     // @dev distributionId => SAFE to distribute to the holders (this is half of totalAmount in USD swapped for SAFE)
-    mapping(uint256 => uint256) public safeToDistribute;
+        mapping(uint256 => uint256) public safeToDistribute;
     // @dev distributionId => account => alreadyDistributedAmount (claimed)
     mapping(uint256 => mapping(address => uint256)) public alreadyDistributed;
     // @dev distributionId => tier => amount
@@ -159,9 +159,14 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         usd.transferFrom(_msgSender(), address(this), _amountUSD);
         currentDistributionId++;
         profitToDistribute[currentDistributionId] = _amountUSD;
-        uint256 rewardsToHolders = _amountUSD / 2;
         //send half to treasury and management
-        uint256 distributedInternally = _distribute(usd, _amountUSD - rewardsToHolders, profitDistribution);
+        uint256 distributedInternally = _distribute(usd, _amountUSD, profitDistribution);
+        uint256 fivePercent = (_amountUSD * 1_000_000*5) / HUNDRED_PERCENT;
+        if (ambassador != address(0)) {
+            usd.transfer(ambassador, fivePercent);
+        }
+        usd.transfer(preVaultWallet, fivePercent);
+        uint256 rewardsToHolders = _amountUSD - distributedInternally-fivePercent*2;
         // get snapshotOfOwnedTokens, loop through addresses, get tokens, and record distribution
 
         for (uint256 i = 0; i < tokenHolders.length; i++) {
@@ -183,10 +188,11 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
 
     function claimReward() public nonReentrant {
         address user = _msgSender();
-        for (uint256 distribution = currentDistributionId; distribution >= 0; distribution--) {
+        for (uint256 distribution = currentDistributionId; distribution > 0; distribution--) {
             uint256 reward = getPendingRewards(user, distribution);
+            require(reward > 0, "No rewards to claim");
             if (reward > 0) {
-                usd.transfer(user, reward);
+                safeToken.transfer(user, reward);
                 alreadyDistributed[distribution][user] += reward;
                 alreadyDistributedTotal[distribution] += reward;
             }
@@ -357,11 +363,13 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         return getPendingRewards(_msgSender(), currentDistributionId);
     }
 
+
     function getPendingRewards(address _user, uint256 _distributionId) public view returns (uint256) {
         // user's rewards is the % of the total rewards for the tier
         uint256 weightedBalance = 0;
+        uint256[TIERS] memory balanceSnapshot = snapshotOfOwnedTokens[_distributionId][_user];
         for (uint256 tier = 0; tier < TIERS; tier++) {
-            weightedBalance += balanceOf(_user, tier) * (tier + 1);
+            weightedBalance += balanceSnapshot[tier] * (tier + 1);
         }
         uint256 weightedSupply = 0;
         for (uint256 tier = 0; tier < TIERS; tier++) {
@@ -372,17 +380,17 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         return rewards - alreadyDistributed[_distributionId][_user];
     }
 
-    function getTreasuryCost() public view returns (uint256) {
-        return usd.balanceOf(wallets[uint256(WalletsUsed.Treasury)]) + safeToken.balanceOf(wallets[uint256(WalletsUsed.Treasury)]) * safeToken.price() / 1e6;
-    }
-
     function getMyShareOfTreasury() public view returns (uint256) {
         address user = _msgSender();
         uint treasuryShare = 0;
         for (uint256 tier = 0; tier < TIERS; tier++)
-            treasuryShare += balanceOf(user, tier) * price[tier];
-        uint256 treasuryCost = getTreasuryCost();
-        return (treasuryCost == 0) ? 0 : treasuryShare * HUNDRED_PERCENT / treasuryCost;
+            treasuryShare += balanceOf(user, tier)* (tier+1);
+        uint256[TIERS] memory _totalSupply = getTotalSupplyAllTiers();
+        uint256 weightedSupply = 0;
+        for (uint256 tier = 0; tier < TIERS; tier++) {
+            weightedSupply += _totalSupply[tier] * (tier + 1);
+        }
+        return (weightedSupply == 0) ? 0 : treasuryShare * HUNDRED_PERCENT / weightedSupply;
     }
 
     function uri(uint256 _tokenId) public view virtual override returns (string memory) {
@@ -393,7 +401,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
 
     function getUnclaimedRewards() public view returns (uint256) {
         uint256 unclaimedRewards = 0;
-        for (uint256 distribution = currentDistributionId; distribution >= 0; distribution--) {
+        for (uint256 distribution = currentDistributionId; distribution > 0; distribution--) {
             unclaimedRewards += safeToDistribute[currentDistributionId] - alreadyDistributedTotal[currentDistributionId];
         }
         return unclaimedRewards;
