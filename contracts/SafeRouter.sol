@@ -12,6 +12,8 @@ contract SafeRouter is Proxied, ReentrancyGuard {
     bytes4 public constant swapSimpleMode = 0x8af033fb;
     IERC20 public usd;
 
+    event PayBulk(uint256 amountUSD, uint256 amountSAFE, uint256 recipeintsCount);
+
 
     function initialize(address _kyberSwapRouter, address _usd, address _safeToken) public proxied {
         kyberSwapRouterContract = _kyberSwapRouter;
@@ -19,7 +21,6 @@ contract SafeRouter is Proxied, ReentrancyGuard {
         safeTokenContract = ISafeToken(_safeToken);
         usd.approve(address(safeTokenContract), type(uint256).max);
         safeTokenContract.approve(address(safeTokenContract), type(uint256).max);
-
     }
 
     constructor(address _kyberSwapRouter, address _usd, address _safeToken) {
@@ -82,5 +83,23 @@ contract SafeRouter is Proxied, ReentrancyGuard {
             signature := mload(add(data, 32))
         }
         return signature;
+    }
+
+
+    function payBulk(address[] calldata _receivers, uint256[] calldata _usdAmounts) external nonReentrant {
+        require(_receivers.length > 0 && _usdAmounts.length == _receivers.length, "SafeToken: receivers must be non-empty and same length as amounts");
+        uint256 usdAmount = 0;
+        for (uint256 i = 0; i < _usdAmounts.length; i++) {
+            require(_usdAmounts[i] > 0, "SafeToken: amount must be greater than 0");
+            usdAmount+= _usdAmounts[i];
+        }
+        usd.transferFrom(msg.sender, address(this), usdAmount);
+        uint256 safeTokens = safeTokenContract.buySafeForExactAmountOfUSD(usdAmount);
+        uint256[] memory safeAmounts = new uint256[](_receivers.length);
+        for (uint256 i = 0; i < _receivers.length; i++) {
+            safeAmounts[i] = safeTokens * _usdAmounts[i] / usdAmount;
+            safeTokenContract.transfer(_receivers[i], safeAmounts[i]);
+        }
+        emit PayBulk(usdAmount, safeTokens, _receivers.length);
     }
 }

@@ -16,7 +16,9 @@ export default task('permit', 'approve SafeToken to spend USDC')
     const { deployer, usdc } = await getNamedAccounts();
     await networkInfo(hre, info);
     const spenders = (
-      await Promise.all(['SafeToken', 'SafeNFT', 'SafeVault'].map(contractName => deployments.get(contractName)))
+      await Promise.all(
+        ['SafeToken', 'SafeNFT', 'SafeVault', 'SafeRouter'].map(contractName => deployments.get(contractName)),
+      )
     ).map(deployment => deployment.address);
 
     const signer = user ?? deployer;
