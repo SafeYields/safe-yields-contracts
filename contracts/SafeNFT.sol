@@ -15,6 +15,9 @@ import "./Wallets.sol";
 /// @author crypt0grapher
 /// @notice Safe Yields NFT token based on ERC1155 standard, id [0..3] represents one of the 4 tiers
 contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply, Proxied, ReentrancyGuard {
+    event Claimed(address indexed operator, uint256 distribution, uint256 amount);
+    event ProfitDistributed(uint256 distribution, uint256 amountUSD, uint256 amountSAFE);
+
     /// todo a number of tiers should be flexible
     uint256 public constant TIERS = 4;
     uint256 public constant WEEKS = 4;
@@ -23,7 +26,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
     uint256[TIERS] public maxSupply;
 
     mapping(uint256 => string) private tokenURIs;
-    address[] public tokenHolders;
+    address[] public unused;
 
     ISafeToken public safeToken;
     ISafeVault public safeVault;
@@ -65,7 +68,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
     mapping(uint256 => uint256) public soldInDiscountedSale;
     // @dev distributionId => already paid out amount in SafeToken
     mapping(uint256 => uint256) public alreadyDistributedTotal;
-
+    address[] public tokenHolders;
 
     event Sale(address indexed to, uint256 indexed id, uint256 indexed amount, uint256 price);
 
@@ -156,6 +159,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
 
 
     function distributeProfit(uint256 _amountUSD) public nonReentrant {
+        require(_amountUSD > 0, "Amount must be greater than 0");
         usd.transferFrom(_msgSender(), address(this), _amountUSD);
         currentDistributionId++;
         profitToDistribute[currentDistributionId] = _amountUSD;
@@ -184,17 +188,18 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         safeToDistribute[currentDistributionId] = safeToken.buySafeForExactAmountOfUSD(rewardsToHolders);
         // Getting a snapshotOfTotalSupply
         snapshotOfTotalSupply[currentDistributionId] = getTotalSupplyAllTiers();
+        emit ProfitDistributed(currentDistributionId, _amountUSD, rewardsToHolders);
     }
 
     function claimReward() public nonReentrant {
         address user = _msgSender();
         for (uint256 distribution = currentDistributionId; distribution > 0; distribution--) {
             uint256 reward = getPendingRewards(user, distribution);
-            require(reward > 0, "No rewards to claim");
             if (reward > 0) {
                 safeToken.transfer(user, reward);
                 alreadyDistributed[distribution][user] += reward;
                 alreadyDistributedTotal[distribution] += reward;
+                emit Claimed(user, distribution, reward);
             }
         }
     }
@@ -295,6 +300,13 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         _burn(account, id, value);
     }
 
+    function getTokenHolders() public view returns (address[] memory) {
+        return tokenHolders;
+    }
+
+    function getTokenHoldersLength() public view returns (uint256) {
+        return tokenHolders.length;
+    }
 
     /* ============ External and Public View Functions ============ */
 
