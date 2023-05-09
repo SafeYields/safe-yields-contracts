@@ -5,3 +5,4 @@ export * as permit from './permit';
 export * as init from './init';
 export * as presale from './presale';
 export * as feed from './feed';
+export * as keys from './keys';

@@ -36,3 +36,4 @@ yarn-error.log*
 # Docs
 docs
 .DS_Store
+/.env.real
