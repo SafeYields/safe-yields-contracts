@@ -27,7 +27,11 @@ if (!explorerApiKey) {
   console.log("ARBISCAN_API_KEY not set in an .env file, deployment verification won't be available");
 }
 
-const mainnetAccounts = [process.env.DEPLOYER_PRIVATE_KEY ?? '', process.env.PREVAULT_PRIVATE_KEY || ''];
+const mainnetAccounts = [
+  process.env.DEPLOYER_PRIVATE_KEY ?? '',
+  process.env.PREVAULT_PRIVATE_KEY || '',
+  process.env.PROFIT_PRIVATE_KEY || '',
+];
 
 const MAINNET_USDC_ADDRESS = '0xff970a61a04b1ca14834a43f5de4533ebddb5cc8';
 const TESTNET_USDC_ADDRESS = '0x179522635726710dd7d2035a81d856de4aa7836c';
