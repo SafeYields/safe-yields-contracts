@@ -362,7 +362,11 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
     }
 
     function getMyPendingRewards() public view returns (uint256) {
-        return getPendingRewards(_msgSender(), currentDistributionId);
+        uint256 pending = 0;
+        for (uint256 distribution = currentDistributionId; distribution > 0; distribution--) {
+            pending += getPendingRewards(_msgSender(), distribution);
+        }
+        return pending;
     }
 
 
