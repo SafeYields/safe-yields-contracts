@@ -98,21 +98,11 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         usd.approve(address(safeToken), type(uint256).max);
         usd.approve(address(safeVault), type(uint256).max);
         safeToken.approve(address(safeToken), type(uint256).max);
-        currentDistributionId = 0;
     }
 
     constructor(string memory _uri, uint256[TIERS] memory _price, uint256[TIERS] memory _maxSupply, ISafeToken _safeToken, uint256[WALLETS] memory _priceDistributionOnMint, uint256 _referralShareForNFTPurchase, uint256[WALLETS] memory _profitDistribution, address _prevaultWallet) ERC1155PresetMinterPauser(_uri) {
         initialize(_uri, _price, _maxSupply, _safeToken, _priceDistributionOnMint, _referralShareForNFTPurchase, _profitDistribution, _prevaultWallet);
     }
-
-    //    ///TODO remove once filled with data
-    //    function setOwnedTokenBatch(address[] calldata _owners, uint256[TIERS][] calldata _tokens) public onlyAdmin {
-    //        require(_owners.length == _tokens.length, "Arrays must be of the same length");
-    //        for (uint256 i = 0; i < _owners.length; i++) {
-    //            ownedTokens[_owners[i]] = _tokens[i];
-    //        }
-    //    }
-
 
     function buy(Tiers _tier, uint256 _amount, address _referral) public nonReentrant {
         require(_amount > 0, "E RC1155PresetMinterPauser: amount must be greater than 0");
@@ -372,7 +362,11 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
     }
 
     function getMyPendingRewards() public view returns (uint256) {
-        return getPendingRewards(_msgSender(), currentDistributionId);
+        uint256 pending = 0;
+        for (uint256 distribution = currentDistributionId; distribution > 0; distribution--) {
+            pending += getPendingRewards(_msgSender(), distribution);
+        }
+        return pending;
     }
 
 

@@ -7,11 +7,13 @@ const func: DeployFunction = async hre => {
   const tokenContract = await hre.ethers.getContract<SafeToken>('SafeToken');
   const vault = await hre.ethers.getContract<SafeVault>('SafeVault');
   const nft = await hre.deployments.get('SafeNFT');
+  const router = await hre.deployments.get('SafeRouter');
   for (const address of [
     process.env.TREASURY_ADDRESS || hre.ethers.constants.AddressZero,
     process.env.MANAGEMENT_ADDRESS || hre.ethers.constants.AddressZero,
     vault.address,
     nft.address,
+    router.address,
   ]) {
     if (!(await tokenContract.whitelist(address))) {
       deployInfo(`Authorizing SafeToken for ${address}`);
