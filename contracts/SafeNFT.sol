@@ -53,7 +53,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
     // @dev distributionId => total distribution amount in USD (total amount of USD sent for distribution)
     mapping(uint256 => uint256) public profitToDistribute;
     // @dev distributionId => SAFE to distribute to the holders (this is half of totalAmount in USD swapped for SAFE)
-        mapping(uint256 => uint256) public safeToDistribute;
+    mapping(uint256 => uint256) public safeToDistribute;
     // @dev distributionId => account => alreadyDistributedAmount (claimed)
     mapping(uint256 => mapping(address => uint256)) public alreadyDistributed;
     // @dev distributionId => tier => amount
@@ -155,12 +155,12 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         profitToDistribute[currentDistributionId] = _amountUSD;
         //send half to treasury and management
         uint256 distributedInternally = _distribute(usd, _amountUSD, profitDistribution);
-        uint256 fivePercent = (_amountUSD * 1_000_000*5) / HUNDRED_PERCENT;
+        uint256 fivePercent = (_amountUSD * 1_000_000 * 5) / HUNDRED_PERCENT;
         if (ambassador != address(0)) {
             usd.transfer(ambassador, fivePercent);
         }
         usd.transfer(preVaultWallet, fivePercent);
-        uint256 rewardsToHolders = _amountUSD - distributedInternally-fivePercent*2;
+        uint256 rewardsToHolders = _amountUSD - distributedInternally - fivePercent * 2;
         // get snapshotOfOwnedTokens, loop through addresses, get tokens, and record distribution
 
         for (uint256 i = 0; i < tokenHolders.length; i++) {
@@ -388,9 +388,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
 
     function getMyShareOfTreasury() public view returns (uint256) {
         address user = _msgSender();
-        uint treasuryShare = 0;
-        for (uint256 tier = 0; tier < TIERS; tier++)
-            treasuryShare += balanceOf(user, tier)* (tier+1);
+        uint treasuryShare = votingPower(user);
         uint256[TIERS] memory _totalSupply = getTotalSupplyAllTiers();
         uint256 weightedSupply = 0;
         for (uint256 tier = 0; tier < TIERS; tier++) {
@@ -411,6 +409,13 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
             unclaimedRewards += safeToDistribute[currentDistributionId] - alreadyDistributedTotal[currentDistributionId];
         }
         return unclaimedRewards;
+    }
+
+    function votingPower(address _owner) public view returns (uint256) {
+        uint combinedBalance = 0;
+        for (uint256 tier = 0; tier < TIERS; tier++)
+            combinedBalance += balanceOf(_owner, tier) * (tier + 1);
+        return combinedBalance;
     }
 
 }
