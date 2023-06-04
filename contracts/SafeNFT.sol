@@ -69,6 +69,9 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
     // @dev distributionId => already paid out amount in SafeToken
     mapping(uint256 => uint256) public alreadyDistributedTotal;
     address[] public tokenHolders;
+    mapping(address => bool) public isExcludedFromRewardsDistribution;
+    address[] public addressesExcludedFromRewardsDistribution;
+
 
     event Sale(address indexed to, uint256 indexed id, uint256 indexed amount, uint256 price);
 
@@ -130,19 +133,19 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
             emit Sale(sender, _amount, uint256(_tier), usdPrice);
         }
         else {
-            uint256 usdPrice = price[uint256(_tier)] * _amount;
-            usd.transferFrom(_msgSender(), address(this), usdPrice);
-            uint256 toSellForSafe = _getTotalShare(usdPrice, priceDistributionOnMint, referralExists ? referralShareForNFTPurchase : 0);
-            uint256 safeAmount = safeToken.buySafeForExactAmountOfUSD(toSellForSafe);
-            uint256 amountDistributed = _distribute(safeToken, safeAmount, priceDistributionOnMint);
-            if (referralExists) {
-                uint256 referralFee = _transferPercent(safeToken, safeAmount, _referral, referralShareForNFTPurchase);
-                amountDistributed += referralFee;
-            }
-            uint256 balance = usd.balanceOf(address(this));
-            if (balance > 0) {
-                safeVault.deposit(balance);
-            }
+//            uint256 usdPrice = price[uint256(_tier)] * _amount;
+//            usd.transferFrom(_msgSender(), address(this), usdPrice);
+//            uint256 toSellForSafe = _getTotalShare(usdPrice, priceDistributionOnMint, referralExists ? referralShareForNFTPurchase : 0);
+//            uint256 safeAmount = safeToken.buySafeForExactAmountOfUSD(toSellForSafe);
+//            uint256 amountDistributed = _distribute(safeToken, safeAmount, priceDistributionOnMint);
+//            if (referralExists) {
+//                uint256 referralFee = _transferPercent(safeToken, safeAmount, _referral, referralShareForNFTPurchase);
+//                amountDistributed += referralFee;
+//            }
+//            uint256 balance = usd.balanceOf(address(this));
+//            if (balance > 0) {
+//                safeVault.deposit(balance);
+//            }
         }
         _mint(_msgSender(), id, _amount, "");
     }
@@ -165,7 +168,7 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
 
         for (uint256 i = 0; i < tokenHolders.length; i++) {
             address tokenHolder = tokenHolders[i];
-            if (tokenHolder != address(0) && isTokenHolder[tokenHolder]) {
+            if (tokenHolder != address(0) && isTokenHolder[tokenHolder] && !isExcludedFromRewardsDistribution[tokenHolder]) {
                 for (uint256 j = 0; j < TIERS; j++) {
                     uint256 owned = balanceOf(tokenHolder, j);
                     if (owned > 0) {
@@ -178,7 +181,39 @@ contract SafeNFT is ISafeNFT, Wallets, ERC1155PresetMinterPauser, ERC1155Supply,
         safeToDistribute[currentDistributionId] = safeToken.buySafeForExactAmountOfUSD(rewardsToHolders);
         // Getting a snapshotOfTotalSupply
         snapshotOfTotalSupply[currentDistributionId] = getTotalSupplyAllTiers();
+        for (uint j = 0; j < addressesExcludedFromRewardsDistribution.length; j++) {
+            address excludedAddress = addressesExcludedFromRewardsDistribution[j];
+            for (uint256 i = 0; i < TIERS; i++) {
+                snapshotOfTotalSupply[currentDistributionId][i] -= balanceOf(excludedAddress, i);
+            }
+        }
         emit ProfitDistributed(currentDistributionId, _amountUSD, rewardsToHolders);
+    }
+
+    function blacklistForRewardsDistribution(address[] memory _addresses) public onlyAdmin {
+        for (uint256 i = 0; i < _addresses.length; i++) {
+            address addressToBlacklist = _addresses[i];
+            if (addressToBlacklist != address(0) && !isExcludedFromRewardsDistribution[addressToBlacklist]) {
+                isExcludedFromRewardsDistribution[addressToBlacklist] = true;
+                addressesExcludedFromRewardsDistribution.push(addressToBlacklist);
+            }
+        }
+    }
+
+    function whitelistForRewardsDistribution(address[] memory _addresses) public onlyAdmin {
+        for (uint256 j = 0; j < _addresses.length; j++) {
+            address addressToWhitelist = _addresses[j];
+            if (addressToWhitelist != address(0) && isExcludedFromRewardsDistribution[addressToWhitelist]) {
+                isExcludedFromRewardsDistribution[addressToWhitelist] = false;
+                for (uint i = 0; i < addressesExcludedFromRewardsDistribution.length; i++) {
+                    if (addressesExcludedFromRewardsDistribution[i] == addressToWhitelist) {
+                        addressesExcludedFromRewardsDistribution[i] = addressesExcludedFromRewardsDistribution[addressesExcludedFromRewardsDistribution.length - 1];
+                        addressesExcludedFromRewardsDistribution.pop();
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     function claimReward() public nonReentrant {
