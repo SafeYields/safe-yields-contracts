@@ -1,0 +1,398 @@
+{
+  "address": "0xF82472ea1acE5C7236DB0829e2F7E68e99C53056",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_safeNFT",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "proposalId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "description",
+          "type": "string"
+        }
+      ],
+      "name": "ProposalAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "proposalId",
+          "type": "uint256"
+        }
+      ],
+      "name": "ProposalClosed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "proposalId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "voter",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "vote",
+          "type": "uint256"
+        }
+      ],
+      "name": "VoteCasted",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_description",
+          "type": "string"
+        }
+      ],
+      "name": "addProposal",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_proposalId",
+          "type": "uint256"
+        }
+      ],
+      "name": "closeProposal",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_proposalId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getProposal",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "description",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "yesVotes",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "noVotes",
+          "type": "uint256"
+        },
+        {
+          "internalType": "enum IVotingDAO.Status",
+          "name": "status",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_safeNFT",
+          "type": "address"
+        }
+      ],
+      "name": "initialize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "proposals",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "description",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "yesVotes",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "noVotes",
+          "type": "uint256"
+        },
+        {
+          "internalType": "enum IVotingDAO.Status",
+          "name": "status",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "safeNFT",
+      "outputs": [
+        {
+          "internalType": "contract ISafeNFT",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_proposalId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "enum IVotingDAO.Vote",
+          "name": "_vote",
+          "type": "uint8"
+        }
+      ],
+      "name": "vote",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0xa61d919969b7a2d54752572a74518b0e05c527116e91cc78d037dae6d194054c",
+  "receipt": {
+    "to": null,
+    "from": "0xBD03D84be529D5b8862FD18ABFbA4d3b753d488A",
+    "contractAddress": "0xF82472ea1acE5C7236DB0829e2F7E68e99C53056",
+    "transactionIndex": 1,
+    "gasUsed": "855146",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0x3e6c1f4ac9eb45843f2ec163a74cc0f36a8a9d376e0bfc87e67b6403fbc12ba2",
+    "transactionHash": "0xa61d919969b7a2d54752572a74518b0e05c527116e91cc78d037dae6d194054c",
+    "logs": [],
+    "blockNumber": 24014141,
+    "cumulativeGasUsed": "855146",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [
+    "0xAa1D2ca80198470dbCC594CbcA8B7Ea4cBf9a3fE"
+  ],
+  "numDeployments": 1,
+  "solcInputHash": "ff316e747261efd5e1332b3d0409961d",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.17+commit.8df45f5f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_safeNFT\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"proposalId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"description\",\"type\":\"string\"}],\"name\":\"ProposalAdded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"proposalId\",\"type\":\"uint256\"}],\"name\":\"ProposalClosed\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"proposalId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"voter\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"vote\",\"type\":\"uint256\"}],\"name\":\"VoteCasted\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_description\",\"type\":\"string\"}],\"name\":\"addProposal\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_proposalId\",\"type\":\"uint256\"}],\"name\":\"closeProposal\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_proposalId\",\"type\":\"uint256\"}],\"name\":\"getProposal\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"description\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"yesVotes\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"noVotes\",\"type\":\"uint256\"},{\"internalType\":\"enum IVotingDAO.Status\",\"name\":\"status\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_safeNFT\",\"type\":\"address\"}],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"proposals\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"description\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"yesVotes\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"noVotes\",\"type\":\"uint256\"},{\"internalType\":\"enum IVotingDAO.Status\",\"name\":\"status\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"safeNFT\",\"outputs\":[{\"internalType\":\"contract ISafeNFT\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_proposalId\",\"type\":\"uint256\"},{\"internalType\":\"enum IVotingDAO.Vote\",\"name\":\"_vote\",\"type\":\"uint8\"}],\"name\":\"vote\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"addProposal(string)\":{\"params\":{\"_description\":\"The description of the proposal.\"}},\"closeProposal(uint256)\":{\"params\":{\"_proposalId\":\"The ID of the proposal.\"}},\"getProposal(uint256)\":{\"params\":{\"_proposalId\":\"The ID of the proposal.\"},\"returns\":{\"description\":\"The description of the proposal.\",\"noVotes\":\"The number of no votes.\",\"status\":\"The status of the proposal (Open or Closed).\",\"yesVotes\":\"The number of yes votes.\"}},\"vote(uint256,uint8)\":{\"params\":{\"_proposalId\":\"The ID of the proposal.\",\"_vote\":\"The vote (Yes 1 or No 2).\"}}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"addProposal(string)\":{\"notice\":\"This function adds a new proposal to the list of proposals.\"},\"closeProposal(uint256)\":{\"notice\":\"This function allows the admin to close a proposal.\"},\"getProposal(uint256)\":{\"notice\":\"This function returns the details of a proposal.\"},\"vote(uint256,uint8)\":{\"notice\":\"This function allows Safe NFT owners to vote on a proposal.\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/VotingDAO.sol\":\"VotingDAO\"},\"evmVersion\":\"berlin\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":250},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/token/ERC1155/IERC1155.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v4.7.0) (token/ERC1155/IERC1155.sol)\\n\\npragma solidity ^0.8.0;\\n\\nimport \\\"../../utils/introspection/IERC165.sol\\\";\\n\\n/**\\n * @dev Required interface of an ERC1155 compliant contract, as defined in the\\n * https://eips.ethereum.org/EIPS/eip-1155[EIP].\\n *\\n * _Available since v3.1._\\n */\\ninterface IERC1155 is IERC165 {\\n    /**\\n     * @dev Emitted when `value` tokens of token type `id` are transferred from `from` to `to` by `operator`.\\n     */\\n    event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 value);\\n\\n    /**\\n     * @dev Equivalent to multiple {TransferSingle} events, where `operator`, `from` and `to` are the same for all\\n     * transfers.\\n     */\\n    event TransferBatch(\\n        address indexed operator,\\n        address indexed from,\\n        address indexed to,\\n        uint256[] ids,\\n        uint256[] values\\n    );\\n\\n    /**\\n     * @dev Emitted when `account` grants or revokes permission to `operator` to transfer their tokens, according to\\n     * `approved`.\\n     */\\n    event ApprovalForAll(address indexed account, address indexed operator, bool approved);\\n\\n    /**\\n     * @dev Emitted when the URI for token type `id` changes to `value`, if it is a non-programmatic URI.\\n     *\\n     * If an {URI} event was emitted for `id`, the standard\\n     * https://eips.ethereum.org/EIPS/eip-1155#metadata-extensions[guarantees] that `value` will equal the value\\n     * returned by {IERC1155MetadataURI-uri}.\\n     */\\n    event URI(string value, uint256 indexed id);\\n\\n    /**\\n     * @dev Returns the amount of tokens of token type `id` owned by `account`.\\n     *\\n     * Requirements:\\n     *\\n     * - `account` cannot be the zero address.\\n     */\\n    function balanceOf(address account, uint256 id) external view returns (uint256);\\n\\n    /**\\n     * @dev xref:ROOT:erc1155.adoc#batch-operations[Batched] version of {balanceOf}.\\n     *\\n     * Requirements:\\n     *\\n     * - `accounts` and `ids` must have the same length.\\n     */\\n    function balanceOfBatch(address[] calldata accounts, uint256[] calldata ids)\\n        external\\n        view\\n        returns (uint256[] memory);\\n\\n    /**\\n     * @dev Grants or revokes permission to `operator` to transfer the caller's tokens, according to `approved`,\\n     *\\n     * Emits an {ApprovalForAll} event.\\n     *\\n     * Requirements:\\n     *\\n     * - `operator` cannot be the caller.\\n     */\\n    function setApprovalForAll(address operator, bool approved) external;\\n\\n    /**\\n     * @dev Returns true if `operator` is approved to transfer ``account``'s tokens.\\n     *\\n     * See {setApprovalForAll}.\\n     */\\n    function isApprovedForAll(address account, address operator) external view returns (bool);\\n\\n    /**\\n     * @dev Transfers `amount` tokens of token type `id` from `from` to `to`.\\n     *\\n     * Emits a {TransferSingle} event.\\n     *\\n     * Requirements:\\n     *\\n     * - `to` cannot be the zero address.\\n     * - If the caller is not `from`, it must have been approved to spend ``from``'s tokens via {setApprovalForAll}.\\n     * - `from` must have a balance of tokens of type `id` of at least `amount`.\\n     * - If `to` refers to a smart contract, it must implement {IERC1155Receiver-onERC1155Received} and return the\\n     * acceptance magic value.\\n     */\\n    function safeTransferFrom(\\n        address from,\\n        address to,\\n        uint256 id,\\n        uint256 amount,\\n        bytes calldata data\\n    ) external;\\n\\n    /**\\n     * @dev xref:ROOT:erc1155.adoc#batch-operations[Batched] version of {safeTransferFrom}.\\n     *\\n     * Emits a {TransferBatch} event.\\n     *\\n     * Requirements:\\n     *\\n     * - `ids` and `amounts` must have the same length.\\n     * - If `to` refers to a smart contract, it must implement {IERC1155Receiver-onERC1155BatchReceived} and return the\\n     * acceptance magic value.\\n     */\\n    function safeBatchTransferFrom(\\n        address from,\\n        address to,\\n        uint256[] calldata ids,\\n        uint256[] calldata amounts,\\n        bytes calldata data\\n    ) external;\\n}\\n\",\"keccak256\":\"0x6392f2cfe3a5ee802227fe7a2dfd47096d881aec89bddd214b35c5b46d3cd941\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/introspection/IERC165.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts v4.4.1 (utils/introspection/IERC165.sol)\\n\\npragma solidity ^0.8.0;\\n\\n/**\\n * @dev Interface of the ERC165 standard, as defined in the\\n * https://eips.ethereum.org/EIPS/eip-165[EIP].\\n *\\n * Implementers can declare support of contract interfaces, which can then be\\n * queried by others ({ERC165Checker}).\\n *\\n * For an implementation, see {ERC165}.\\n */\\ninterface IERC165 {\\n    /**\\n     * @dev Returns true if this contract implements the interface defined by\\n     * `interfaceId`. See the corresponding\\n     * https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[EIP section]\\n     * to learn more about how these ids are created.\\n     *\\n     * This function call must use less than 30 000 gas.\\n     */\\n    function supportsInterface(bytes4 interfaceId) external view returns (bool);\\n}\\n\",\"keccak256\":\"0x447a5f3ddc18419d41ff92b3773fb86471b1db25773e07f877f548918a185bf1\",\"license\":\"MIT\"},\"contracts/VotingDAO.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.8.4;\\n\\nimport \\\"./interfaces/ISafeNFT.sol\\\";\\nimport \\\"hardhat-deploy/solc_0.8/proxy/Proxied.sol\\\";\\nimport \\\"./interfaces/IVotingDAO.sol\\\";\\n\\ncontract VotingDAO is IVotingDAO, Proxied {\\n    ISafeNFT public safeNFT;\\n\\n    Proposal[] public proposals;\\n\\n    modifier onlySafeNFTOwner() {\\n        require(safeNFT.votingPower(msg.sender) > 0, \\\"Only Safe NFT owners can call this function\\\");\\n        _;\\n    }\\n\\n    function initialize(address _safeNFT) public proxied {\\n        safeNFT = ISafeNFT(_safeNFT);\\n    }\\n    constructor (address _safeNFT) {\\n        initialize(_safeNFT);\\n    }\\n\\n\\n    function addProposal(string memory _description) public onlyProxyAdmin {\\n        proposals.push();\\n        Proposal storage proposal = proposals[proposals.length - 1];\\n        proposal.description = _description;\\n        proposal.status = Status.Open;\\n        emit ProposalAdded(proposals.length - 1, _description);\\n    }\\n\\n    function vote(uint _proposalId, Vote _vote) public onlySafeNFTOwner {\\n        Proposal storage proposal = proposals[_proposalId];\\n\\n        require(proposal.status == Status.Open, \\\"Proposal is not open\\\");\\n        require(proposal.votesByMember[msg.sender] == Vote.NoVote, \\\"You have already voted\\\");\\n\\n        if (_vote == Vote.Yes) {\\n            proposal.yesVotes += safeNFT.votingPower(msg.sender);\\n        } else if (_vote == Vote.No) {\\n            proposal.noVotes += safeNFT.votingPower(msg.sender);\\n        } else\\n            revert(\\\"Invalid vote, only Yes (1) or No (2)\\\");\\n        proposal.votesByMember[msg.sender] = _vote;\\n        emit VoteCasted(_proposalId, msg.sender, uint(_vote));\\n    }\\n\\n    function closeProposal(uint _proposalId) public onlyProxyAdmin {\\n        Proposal storage proposal = proposals[_proposalId];\\n\\n        require(proposal.status == Status.Open, \\\"Proposal is not open\\\");\\n\\n        proposal.status = Status.Closed;\\n        emit ProposalClosed(_proposalId);\\n    }\\n\\n    function getProposal(uint _proposalId) public view returns (string memory description, uint yesVotes, uint noVotes, Status status) {\\n        Proposal storage proposal = proposals[_proposalId];\\n        return (proposal.description, proposal.yesVotes, proposal.noVotes, proposal.status);\\n    }\\n\\n}\\n\",\"keccak256\":\"0xa0004dfac45872ca0c3806ac2e2dff9a3acb973e1937233f4b56fc0307710183\",\"license\":\"MIT\"},\"contracts/interfaces/ISafeNFT.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity >=0.8.17;\\n\\nimport \\\"@openzeppelin/contracts/token/ERC1155/IERC1155.sol\\\";\\n//  ____         __       __   ___      _     _\\n//  /___|  __ _ / _| ___  \\\\ \\\\ / (_) ___| | __| |___\\n// \\\\___ \\\\ / _` | |_ / _ \\\\  \\\\ V /| |/ _ \\\\ |/ _` / __|\\n//  ___) | (_| |  _|  __/   | | | |  __/ | (_| \\\\__ \\\\\\n// |____/ \\\\__,_|_|  \\\\___|   |_| |_|\\\\___|_|\\\\__,_|___/\\n\\n/// @title  ISafeVault\\n/// @author crypt0grapher\\n/// @notice Safe Yield Vault depositing to the third-party yield farms\\ninterface ISafeNFT is IERC1155 {\\n    enum Tiers {Tier1, Tier2, Tier3, Tier4}\\n\\n    event TogglePresale(bool _status);\\n\\n    /**\\n    *   @notice purchase Safe NFT for exact amount of USD\\n    *   @param _tier tier of the NFT to purchase which stands for ERC1155 token id [0..3]\\n    *   @param _amount amount of USD to spend\\n    *   @param _referral referral getting 5% of the price, should not be the sender, if not specified, goes to treasury\\n    */\\n    function buy(Tiers _tier, uint256 _amount, address _referral) external;\\n\\n    /**\\n    *   @notice distribute profit among the NFT holders, the function fixes the amount of the reward and the NFT holders and their shares at the moment of the call. It does not transfer the reward to the NFT holders, it just records the amount of the reward for each NFT holder.\\n    *   @param _amountUSD amount of USD to distribute\\n    */\\n    function distributeProfit(uint256 _amountUSD) external;\\n\\n    /**\\n    *   @notice the function calculates the amount of the reward for the NFT holder and transfers it to the NFT holder\\n    */\\n    function claimReward() external;\\n\\n    /**\\n    *   @notice gets NFT balance for all tiers\\n    */\\n    function getMyBalanceTable() external view returns (uint256[] memory);\\n\\n    /**\\n    *   @notice toggles presale status\\n    */\\n    function togglePresale() external;\\n\\n    /**\\n    *   @notice sets all discounted NFT prices\\n    *   @param _presalePrice percent to multiply to get the discounted price, e.g. 90 for 10% discount, percent format is determined by the multiplier\\n    */\\n    function setDiscountedPrice(uint256 _presalePrice) external;\\n\\n\\n    /**\\n    *   @notice gets NFT balance for all tiers\\n    */\\n    function getBalanceTable(address _user) external view returns (uint256[] memory);\\n\\n\\n    /**\\n    *   @notice gets NFT price for all tiers in USD\\n    ///todo in SAFE!\\n    */\\n    function getFairPriceTable() external view returns (uint256[] memory);\\n\\n\\n    /**\\n    *   @notice gets all NFT prices in USD, the original ones without discounts\\n    *   @return uint256[] containing all NFT prices in one table in USD\\n    */\\n    function getPriceTable() external view returns (uint256[] memory);\\n\\n    /**\\n    *   @notice gets all discounted NFT prices in USD, for presale for all 4 weeks of the presale\\n     *   @return uint256 containing percent to multiply to the price to get a discount\\n    */\\n    function discountedPrice() external view returns (uint256);\\n\\n\\n\\n    /**\\n    *   @notice gets NFT price in USD\\n    *   @return NFT price in USD\\n    */\\n    function getPrice(Tiers _tier) external view returns (uint256);\\n\\n\\n    /**\\n    *   @notice gets NFT fair price in USD\\n    *   @return counts not only the sale price but also share of the profit for the tier\\n    */\\n    function getFairPrice(Tiers _tier) external view returns (uint256);\\n\\n    /**\\n    *   @notice gets the current distribution number\\n    *   @return current distribution number, the one that assigned to the latest distribution\\n    */\\n    function currentDistributionId() external view returns (uint256);\\n\\n    /**\\n    *   @notice undistributed profit amount in USD\\n    *   @return amount of the rewards not yet distributed to NFT holders\\n    */\\n    function getUnclaimedRewards() external view returns (uint256);\\n\\n\\n    /**\\n    *   @notice returns the amount of the reward share for the NFT holder\\n    */\\n    function getPendingRewards(address _user, uint256 _distributionId) external view returns (uint256);\\n\\n    /**\\n    *   @notice **Your NFTs (% Treasury) **is calculated in $ as a relation of total price of NFTs possessed by the $ amount of Investment Pool - including its SAFE and stable coin  components.\\n    */\\n    function getMyShareOfTreasury() external view returns (uint256);\\n\\n    /**\\n    *   @notice returns the weighted balance of the user across all tiers\\n    */\\n    function votingPower(address _user) external view returns (uint256);\\n\\n}\\n\",\"keccak256\":\"0xc01b58c80e30763b3b8e7ed68d8255a5dfaa96d2bed0c87c591d5d27fb89178e\",\"license\":\"MIT\"},\"contracts/interfaces/IVotingDAO.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.8.4;\\n\\ninterface IVotingDAO {\\n    event ProposalAdded(uint indexed proposalId, string description);\\n    event VoteCasted(uint indexed proposalId, address indexed voter, uint indexed vote);\\n    event ProposalClosed(uint indexed proposalId);\\n\\n    enum Status {Open, Closed}\\n    enum Vote {NoVote, Yes, No}\\n\\n    struct Proposal {\\n        string description;\\n        uint yesVotes;\\n        uint noVotes;\\n        Status status;\\n        mapping(address => Vote) votesByMember;\\n    }\\n\\n    /**\\n    @notice This function adds a new proposal to the list of proposals.\\n    @param _description The description of the proposal.\\n    */\\n    function addProposal(string memory _description) external;\\n\\n    /**\\n    @notice This function allows Safe NFT owners to vote on a proposal.\\n    @param _proposalId The ID of the proposal.\\n    @param _vote The vote (Yes 1 or No 2).\\n    */\\n    function vote(uint _proposalId, Vote _vote) external;\\n\\n    /**\\n    @notice This function allows the admin to close a proposal.\\n    @param _proposalId The ID of the proposal.\\n    */\\n    function closeProposal(uint _proposalId) external;\\n\\n    /**\\n    @notice This function returns the details of a proposal.\\n    @param _proposalId The ID of the proposal.\\n    @return description The description of the proposal.\\n    @return yesVotes The number of yes votes.\\n    @return noVotes The number of no votes.\\n    @return status The status of the proposal (Open or Closed).\\n    */\\n    function getProposal(uint _proposalId) external view returns (string memory description, uint yesVotes, uint noVotes, Status status);\\n}\\n\",\"keccak256\":\"0x7b39f5718f681d03d7d1ad56de76dc5af6baa4ca275dd47047bbf11a130214ec\",\"license\":\"MIT\"},\"hardhat-deploy/solc_0.8/proxy/Proxied.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.8.0;\\n\\nabstract contract Proxied {\\n    /// @notice to be used by initialisation / postUpgrade function so that only the proxy's admin can execute them\\n    /// It also allows these functions to be called inside a contructor\\n    /// even if the contract is meant to be used without proxy\\n    modifier proxied() {\\n        address proxyAdminAddress = _proxyAdmin();\\n        // With hardhat-deploy proxies\\n        // the proxyAdminAddress is zero only for the implementation contract\\n        // if the implementation contract want to be used as a standalone/immutable contract\\n        // it simply has to execute the `proxied` function\\n        // This ensure the proxyAdminAddress is never zero post deployment\\n        // And allow you to keep the same code for both proxied contract and immutable contract\\n        if (proxyAdminAddress == address(0)) {\\n            // ensure can not be called twice when used outside of proxy : no admin\\n            // solhint-disable-next-line security/no-inline-assembly\\n            assembly {\\n                sstore(\\n                    0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103,\\n                    0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\\n                )\\n            }\\n        } else {\\n            require(msg.sender == proxyAdminAddress);\\n        }\\n        _;\\n    }\\n\\n    modifier onlyProxyAdmin() {\\n        require(msg.sender == _proxyAdmin(), \\\"NOT_AUTHORIZED\\\");\\n        _;\\n    }\\n\\n    function _proxyAdmin() internal view returns (address ownerAddress) {\\n        // solhint-disable-next-line security/no-inline-assembly\\n        assembly {\\n            ownerAddress := sload(0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103)\\n        }\\n    }\\n}\\n\",\"keccak256\":\"0xaaceeafeeaf0d200ca3942d8bf14c1c4f787a77f79cc87c08bb668e65acdee29\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b50604051610ebb380380610ebb83398101604081905261002f916100bb565b6100388161003e565b506100eb565b6000610056600080516020610e9b8339815191525490565b90506001600160a01b038116610083576001600160a01b03600080516020610e9b83398151915255610098565b336001600160a01b0382161461009857600080fd5b50600080546001600160a01b0319166001600160a01b0392909216919091179055565b6000602082840312156100cd57600080fd5b81516001600160a01b03811681146100e457600080fd5b9392505050565b610da1806100fa6000396000f3fe608060405234801561001057600080fd5b506004361061007d5760003560e01c8063943e82161161005b578063943e8216146100d6578063b718c80a146100e9578063c4d66de814610114578063c7f758a81461012757600080fd5b8063013cf08b146100825780630386a016146100ae5780632fdae3c5146100c3575b600080fd5b6100956100903660046109b0565b61013a565b6040516100a59493929190610a25565b60405180910390f35b6100c16100bc3660046109b0565b610207565b005b6100c16100d1366004610a89565b610340565b6100c16100e4366004610b3a565b610451565b6000546100fc906001600160a01b031681565b6040516001600160a01b0390911681526020016100a5565b6100c1610122366004610b6e565b61081b565b6100956101353660046109b0565b6108c9565b6001818154811061014a57600080fd5b906000526020600020906005020160009150905080600001805461016d90610b9e565b80601f016020809104026020016040519081016040528092919081815260200182805461019990610b9e565b80156101e65780601f106101bb576101008083540402835291602001916101e6565b820191906000526020600020905b8154815290600101906020018083116101c957829003601f168201915b50505050600183015460028401546003909401549293909290915060ff1684565b7fb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103546001600160a01b0316336001600160a01b03161461027f5760405162461bcd60e51b815260206004820152600e60248201526d1393d517d055551213d49256915160921b60448201526064015b60405180910390fd5b60006001828154811061029457610294610bd8565b6000918252602082206005909102019150600382015460ff1660018111156102be576102be610a0f565b146103025760405162461bcd60e51b8152602060048201526014602482015273283937b837b9b0b61034b9903737ba1037b832b760611b6044820152606401610276565b60038101805460ff1916600117905560405182907f887777ccf43690541bed9e00b10d0fccfa7520b11875f09847a57b3085d8ab9290600090a25050565b7fb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103546001600160a01b0316336001600160a01b0316146103b35760405162461bcd60e51b815260206004820152600e60248201526d1393d517d055551213d49256915160921b6044820152606401610276565b600180548101808255600082815291906103ce908290610c04565b815481106103de576103de610bd8565b600091825260209091206005909102019050806103fb8382610c6c565b5060038101805460ff19169055600180546104169190610c04565b7ff970aa486598017b8116c2beb18c50d4584ecbc3c688817f59b26796725f31bf836040516104459190610d2c565b60405180910390a25050565b6000805460405163603a39fb60e11b81523360048201526001600160a01b039091169063c07473f690602401602060405180830381865afa15801561049a573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906104be9190610d3f565b1161051f5760405162461bcd60e51b815260206004820152602b60248201527f4f6e6c792053616665204e4654206f776e6572732063616e2063616c6c20746860448201526a34b990333ab731ba34b7b760a91b6064820152608401610276565b60006001838154811061053457610534610bd8565b6000918252602082206005909102019150600382015460ff16600181111561055e5761055e610a0f565b146105a25760405162461bcd60e51b8152602060048201526014602482015273283937b837b9b0b61034b9903737ba1037b832b760611b6044820152606401610276565b33600090815260048201602052604081205460ff1660028111156105c8576105c8610a0f565b146106155760405162461bcd60e51b815260206004820152601660248201527f596f75206861766520616c726561647920766f746564000000000000000000006044820152606401610276565b600182600281111561062957610629610a0f565b036106b85760005460405163603a39fb60e11b81523360048201526001600160a01b039091169063c07473f690602401602060405180830381865afa158015610676573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061069a9190610d3f565b8160010160008282546106ad9190610d58565b909155506107a49050565b60028260028111156106cc576106cc610a0f565b036107505760005460405163603a39fb60e11b81523360048201526001600160a01b039091169063c07473f690602401602060405180830381865afa158015610719573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061073d9190610d3f565b8160020160008282546106ad9190610d58565b60405162461bcd60e51b8152602060048201526024808201527f496e76616c696420766f74652c206f6e6c792059657320283129206f72204e6f6044820152632028322960e01b6064820152608401610276565b3360009081526004820160205260409020805483919060ff191660018360028111156107d2576107d2610a0f565b02179055508160028111156107e9576107e9610a0f565b604051339085907fe7ee74ca1f4bb1b82b14f87794c45b3e59c39e372b862fb97a6316b43355b69e90600090a4505050565b60006108457fb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d61035490565b90506001600160a01b038116610884576001600160a01b037fb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d610355610899565b336001600160a01b0382161461089957600080fd5b506000805473ffffffffffffffffffffffffffffffffffffffff19166001600160a01b0392909216919091179055565b6060600080600080600186815481106108e4576108e4610bd8565b9060005260206000209060050201905080600001816001015482600201548360030160009054906101000a900460ff1683805461092090610b9e565b80601f016020809104026020016040519081016040528092919081815260200182805461094c90610b9e565b80156109995780601f1061096e57610100808354040283529160200191610999565b820191906000526020600020905b81548152906001019060200180831161097c57829003601f168201915b505050505093509450945094509450509193509193565b6000602082840312156109c257600080fd5b5035919050565b6000815180845260005b818110156109ef576020818501810151868301820152016109d3565b506000602082860101526020601f19601f83011685010191505092915050565b634e487b7160e01b600052602160045260246000fd5b608081526000610a3860808301876109c9565b905084602083015283604083015260028310610a6457634e487b7160e01b600052602160045260246000fd5b82606083015295945050505050565b634e487b7160e01b600052604160045260246000fd5b600060208284031215610a9b57600080fd5b813567ffffffffffffffff80821115610ab357600080fd5b818401915084601f830112610ac757600080fd5b813581811115610ad957610ad9610a73565b604051601f8201601f19908116603f01168101908382118183101715610b0157610b01610a73565b81604052828152876020848701011115610b1a57600080fd5b826020860160208301376000928101602001929092525095945050505050565b60008060408385031215610b4d57600080fd5b82359150602083013560038110610b6357600080fd5b809150509250929050565b600060208284031215610b8057600080fd5b81356001600160a01b0381168114610b9757600080fd5b9392505050565b600181811c90821680610bb257607f821691505b602082108103610bd257634e487b7160e01b600052602260045260246000fd5b50919050565b634e487b7160e01b600052603260045260246000fd5b634e487b7160e01b600052601160045260246000fd5b81810381811115610c1757610c17610bee565b92915050565b601f821115610c6757600081815260208120601f850160051c81016020861015610c445750805b601f850160051c820191505b81811015610c6357828155600101610c50565b5050505b505050565b815167ffffffffffffffff811115610c8657610c86610a73565b610c9a81610c948454610b9e565b84610c1d565b602080601f831160018114610ccf5760008415610cb75750858301515b600019600386901b1c1916600185901b178555610c63565b600085815260208120601f198616915b82811015610cfe57888601518255948401946001909101908401610cdf565b5085821015610d1c5787850151600019600388901b60f8161c191681555b5050505050600190811b01905550565b602081526000610b9760208301846109c9565b600060208284031215610d5157600080fd5b5051919050565b80820180821115610c1757610c17610bee56fea26469706673582212209230c5ac6cd42b1a1dc4faa27b85c9582855d0bfa42d395a45b5ba258b7b0da264736f6c63430008110033b53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b506004361061007d5760003560e01c8063943e82161161005b578063943e8216146100d6578063b718c80a146100e9578063c4d66de814610114578063c7f758a81461012757600080fd5b8063013cf08b146100825780630386a016146100ae5780632fdae3c5146100c3575b600080fd5b6100956100903660046109b0565b61013a565b6040516100a59493929190610a25565b60405180910390f35b6100c16100bc3660046109b0565b610207565b005b6100c16100d1366004610a89565b610340565b6100c16100e4366004610b3a565b610451565b6000546100fc906001600160a01b031681565b6040516001600160a01b0390911681526020016100a5565b6100c1610122366004610b6e565b61081b565b6100956101353660046109b0565b6108c9565b6001818154811061014a57600080fd5b906000526020600020906005020160009150905080600001805461016d90610b9e565b80601f016020809104026020016040519081016040528092919081815260200182805461019990610b9e565b80156101e65780601f106101bb576101008083540402835291602001916101e6565b820191906000526020600020905b8154815290600101906020018083116101c957829003601f168201915b50505050600183015460028401546003909401549293909290915060ff1684565b7fb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103546001600160a01b0316336001600160a01b03161461027f5760405162461bcd60e51b815260206004820152600e60248201526d1393d517d055551213d49256915160921b60448201526064015b60405180910390fd5b60006001828154811061029457610294610bd8565b6000918252602082206005909102019150600382015460ff1660018111156102be576102be610a0f565b146103025760405162461bcd60e51b8152602060048201526014602482015273283937b837b9b0b61034b9903737ba1037b832b760611b6044820152606401610276565b60038101805460ff1916600117905560405182907f887777ccf43690541bed9e00b10d0fccfa7520b11875f09847a57b3085d8ab9290600090a25050565b7fb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103546001600160a01b0316336001600160a01b0316146103b35760405162461bcd60e51b815260206004820152600e60248201526d1393d517d055551213d49256915160921b6044820152606401610276565b600180548101808255600082815291906103ce908290610c04565b815481106103de576103de610bd8565b600091825260209091206005909102019050806103fb8382610c6c565b5060038101805460ff19169055600180546104169190610c04565b7ff970aa486598017b8116c2beb18c50d4584ecbc3c688817f59b26796725f31bf836040516104459190610d2c565b60405180910390a25050565b6000805460405163603a39fb60e11b81523360048201526001600160a01b039091169063c07473f690602401602060405180830381865afa15801561049a573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906104be9190610d3f565b1161051f5760405162461bcd60e51b815260206004820152602b60248201527f4f6e6c792053616665204e4654206f776e6572732063616e2063616c6c20746860448201526a34b990333ab731ba34b7b760a91b6064820152608401610276565b60006001838154811061053457610534610bd8565b6000918252602082206005909102019150600382015460ff16600181111561055e5761055e610a0f565b146105a25760405162461bcd60e51b8152602060048201526014602482015273283937b837b9b0b61034b9903737ba1037b832b760611b6044820152606401610276565b33600090815260048201602052604081205460ff1660028111156105c8576105c8610a0f565b146106155760405162461bcd60e51b815260206004820152601660248201527f596f75206861766520616c726561647920766f746564000000000000000000006044820152606401610276565b600182600281111561062957610629610a0f565b036106b85760005460405163603a39fb60e11b81523360048201526001600160a01b039091169063c07473f690602401602060405180830381865afa158015610676573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061069a9190610d3f565b8160010160008282546106ad9190610d58565b909155506107a49050565b60028260028111156106cc576106cc610a0f565b036107505760005460405163603a39fb60e11b81523360048201526001600160a01b039091169063c07473f690602401602060405180830381865afa158015610719573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061073d9190610d3f565b8160020160008282546106ad9190610d58565b60405162461bcd60e51b8152602060048201526024808201527f496e76616c696420766f74652c206f6e6c792059657320283129206f72204e6f6044820152632028322960e01b6064820152608401610276565b3360009081526004820160205260409020805483919060ff191660018360028111156107d2576107d2610a0f565b02179055508160028111156107e9576107e9610a0f565b604051339085907fe7ee74ca1f4bb1b82b14f87794c45b3e59c39e372b862fb97a6316b43355b69e90600090a4505050565b60006108457fb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d61035490565b90506001600160a01b038116610884576001600160a01b037fb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d610355610899565b336001600160a01b0382161461089957600080fd5b506000805473ffffffffffffffffffffffffffffffffffffffff19166001600160a01b0392909216919091179055565b6060600080600080600186815481106108e4576108e4610bd8565b9060005260206000209060050201905080600001816001015482600201548360030160009054906101000a900460ff1683805461092090610b9e565b80601f016020809104026020016040519081016040528092919081815260200182805461094c90610b9e565b80156109995780601f1061096e57610100808354040283529160200191610999565b820191906000526020600020905b81548152906001019060200180831161097c57829003601f168201915b505050505093509450945094509450509193509193565b6000602082840312156109c257600080fd5b5035919050565b6000815180845260005b818110156109ef576020818501810151868301820152016109d3565b506000602082860101526020601f19601f83011685010191505092915050565b634e487b7160e01b600052602160045260246000fd5b608081526000610a3860808301876109c9565b905084602083015283604083015260028310610a6457634e487b7160e01b600052602160045260246000fd5b82606083015295945050505050565b634e487b7160e01b600052604160045260246000fd5b600060208284031215610a9b57600080fd5b813567ffffffffffffffff80821115610ab357600080fd5b818401915084601f830112610ac757600080fd5b813581811115610ad957610ad9610a73565b604051601f8201601f19908116603f01168101908382118183101715610b0157610b01610a73565b81604052828152876020848701011115610b1a57600080fd5b826020860160208301376000928101602001929092525095945050505050565b60008060408385031215610b4d57600080fd5b82359150602083013560038110610b6357600080fd5b809150509250929050565b600060208284031215610b8057600080fd5b81356001600160a01b0381168114610b9757600080fd5b9392505050565b600181811c90821680610bb257607f821691505b602082108103610bd257634e487b7160e01b600052602260045260246000fd5b50919050565b634e487b7160e01b600052603260045260246000fd5b634e487b7160e01b600052601160045260246000fd5b81810381811115610c1757610c17610bee565b92915050565b601f821115610c6757600081815260208120601f850160051c81016020861015610c445750805b601f850160051c820191505b81811015610c6357828155600101610c50565b5050505b505050565b815167ffffffffffffffff811115610c8657610c86610a73565b610c9a81610c948454610b9e565b84610c1d565b602080601f831160018114610ccf5760008415610cb75750858301515b600019600386901b1c1916600185901b178555610c63565b600085815260208120601f198616915b82811015610cfe57888601518255948401946001909101908401610cdf565b5085821015610d1c5787850151600019600388901b60f8161c191681555b5050505050600190811b01905550565b602081526000610b9760208301846109c9565b600060208284031215610d5157600080fd5b5051919050565b80820180821115610c1757610c17610bee56fea26469706673582212209230c5ac6cd42b1a1dc4faa27b85c9582855d0bfa42d395a45b5ba258b7b0da264736f6c63430008110033",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {
+      "addProposal(string)": {
+        "params": {
+          "_description": "The description of the proposal."
+        }
+      },
+      "closeProposal(uint256)": {
+        "params": {
+          "_proposalId": "The ID of the proposal."
+        }
+      },
+      "getProposal(uint256)": {
+        "params": {
+          "_proposalId": "The ID of the proposal."
+        },
+        "returns": {
+          "description": "The description of the proposal.",
+          "noVotes": "The number of no votes.",
+          "status": "The status of the proposal (Open or Closed).",
+          "yesVotes": "The number of yes votes."
+        }
+      },
+      "vote(uint256,uint8)": {
+        "params": {
+          "_proposalId": "The ID of the proposal.",
+          "_vote": "The vote (Yes 1 or No 2)."
+        }
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {
+      "addProposal(string)": {
+        "notice": "This function adds a new proposal to the list of proposals."
+      },
+      "closeProposal(uint256)": {
+        "notice": "This function allows the admin to close a proposal."
+      },
+      "getProposal(uint256)": {
+        "notice": "This function returns the details of a proposal."
+      },
+      "vote(uint256,uint8)": {
+        "notice": "This function allows Safe NFT owners to vote on a proposal."
+      }
+    },
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 145,
+        "contract": "contracts/VotingDAO.sol:VotingDAO",
+        "label": "safeNFT",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_contract(ISafeNFT)531"
+      },
+      {
+        "astId": 149,
+        "contract": "contracts/VotingDAO.sol:VotingDAO",
+        "label": "proposals",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_array(t_struct(Proposal)573_storage)dyn_storage"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_array(t_struct(Proposal)573_storage)dyn_storage": {
+        "base": "t_struct(Proposal)573_storage",
+        "encoding": "dynamic_array",
+        "label": "struct IVotingDAO.Proposal[]",
+        "numberOfBytes": "32"
+      },
+      "t_contract(ISafeNFT)531": {
+        "encoding": "inplace",
+        "label": "contract ISafeNFT",
+        "numberOfBytes": "20"
+      },
+      "t_enum(Status)554": {
+        "encoding": "inplace",
+        "label": "enum IVotingDAO.Status",
+        "numberOfBytes": "1"
+      },
+      "t_enum(Vote)558": {
+        "encoding": "inplace",
+        "label": "enum IVotingDAO.Vote",
+        "numberOfBytes": "1"
+      },
+      "t_mapping(t_address,t_enum(Vote)558)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => enum IVotingDAO.Vote)",
+        "numberOfBytes": "32",
+        "value": "t_enum(Vote)558"
+      },
+      "t_string_storage": {
+        "encoding": "bytes",
+        "label": "string",
+        "numberOfBytes": "32"
+      },
+      "t_struct(Proposal)573_storage": {
+        "encoding": "inplace",
+        "label": "struct IVotingDAO.Proposal",
+        "members": [
+          {
+            "astId": 560,
+            "contract": "contracts/VotingDAO.sol:VotingDAO",
+            "label": "description",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_string_storage"
+          },
+          {
+            "astId": 562,
+            "contract": "contracts/VotingDAO.sol:VotingDAO",
+            "label": "yesVotes",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 564,
+            "contract": "contracts/VotingDAO.sol:VotingDAO",
+            "label": "noVotes",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 567,
+            "contract": "contracts/VotingDAO.sol:VotingDAO",
+            "label": "status",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_enum(Status)554"
+          },
+          {
+            "astId": 572,
+            "contract": "contracts/VotingDAO.sol:VotingDAO",
+            "label": "votesByMember",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_mapping(t_address,t_enum(Vote)558)"
+          }
+        ],
+        "numberOfBytes": "160"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  }
+}
