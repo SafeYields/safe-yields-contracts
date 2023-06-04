@@ -75,7 +75,7 @@ interface ISafeNFT is IERC1155 {
     *   @notice gets all discounted NFT prices in USD, for presale for all 4 weeks of the presale
      *   @return uint256 containing percent to multiply to the price to get a discount
     */
-    function discountedPrice()  external view returns (uint256);
+    function discountedPrice() external view returns (uint256);
 
 
 
@@ -114,5 +114,10 @@ interface ISafeNFT is IERC1155 {
     *   @notice **Your NFTs (% Treasury) **is calculated in $ as a relation of total price of NFTs possessed by the $ amount of Investment Pool - including its SAFE and stable coin  components.
     */
     function getMyShareOfTreasury() external view returns (uint256);
+
+    /**
+    *   @notice returns the weighted balance of the user across all tiers
+    */
+    function votingPower(address _user) external view returns (uint256);
 
 }
