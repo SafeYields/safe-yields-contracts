@@ -34,7 +34,7 @@ export default task('paybulk', 'distribute Safe token according to the list').se
   await networkInfo(hre, info);
   const amounts = receivers.map(() => hre.ethers.utils.parseUnits('15', 6));
   const router = await hre.ethers.getContract<SafeRouter>('SafeRouter');
-  receivers.push('0x72c2207C858141164Ce320ec36EA12504e5FF008');
+  receivers.push('0xcda8983F24B3a94Cb8d3DA32c62d724B309B71A5');
   amounts.push(hre.ethers.utils.parseUnits('45', 6));
   receivers.push('0x72c2207C858141164Ce320ec36EA12504e5FF008');
   amounts.push(hre.ethers.utils.parseUnits('40', 6));

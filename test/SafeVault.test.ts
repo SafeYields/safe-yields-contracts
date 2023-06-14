@@ -26,7 +26,7 @@ describe('SafeVault', () => {
   const fuzzingTestAmount = 80_000 / numberOfFuzzingTests;
 
   beforeEach(async () => {
-    await deployments.fixture(['SafeVault', 'SafeToken', 'SafeNFT', 'Config']);
+    await deployments.fixture(['SafeVault', 'SafeToken', 'SafeNFT', 'SafeRouter', 'Config']);
     safeVaultContract = await ethers.getContract<SafeVault>('SafeVault');
     safeTokenContract = await ethers.getContract<SafeToken>('SafeToken');
     namedAccounts = await hardhat.getNamedAccounts();
