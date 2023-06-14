@@ -7,3 +7,4 @@ export * as presale from './presale';
 export * as airdrop from './airdrop';
 export * as keys from './keys';
 export * as blacklist from './blacklist';
+export * as paybulk from './paybulk';

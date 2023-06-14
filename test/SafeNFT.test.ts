@@ -18,7 +18,7 @@ describe('SafeNFT', () => {
   let otherUser: Address;
 
   beforeEach(async () => {
-    await deployments.fixture(['SafeVault', 'SafeToken', 'SafeNFT', 'Config']);
+    await deployments.fixture(['SafeVault', 'SafeToken', 'SafeNFT', 'SafeRouter', 'Config']);
     safeTokenContract = await ethers.getContract<ISafeToken>('SafeToken');
     safeNFTContract = await ethers.getContract<ISafeNFT>('SafeNFT');
     namedAccounts = await hardhat.getNamedAccounts();

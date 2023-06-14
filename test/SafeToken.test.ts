@@ -30,7 +30,7 @@ describe('SafeToken', () => {
     toBigNumber(Math.min(amount, fromBigNumberToFloat(await usdContract.balanceOf(address))));
 
   beforeEach(async () => {
-    await deployments.fixture(['SafeVault', 'SafeToken', 'SafeNFT', 'Config']);
+    await deployments.fixture(['SafeVault', 'SafeToken', 'SafeNFT', 'SafeRouter', 'Config']);
     safeVaultContract = await ethers.getContract<SafeVault>('SafeVault');
     safeTokenContract = await ethers.getContract<SafeToken>('SafeToken');
     namedAccounts = await hardhat.getNamedAccounts();
